@@ -1,0 +1,40 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>L1T O2O</title>
+</head>
+<body>
+
+<h4>The Level-1 Trigger Online to Offline (L1T O2O) system</h4>
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr valign="top">
+<td width="1%" align="right"></td>
+<td width="51%" class="vp">
+<p style="font-family: Helvetica"> <!--times, serif; font-size:14pt; font-style:italic">-->
+The L1T O2O system performs an automated logging of the Level-1 Trigger (L1T) running conditions into the database.
+The trigger running conditions include a range of configuration elements, such as triggering rules (aka. L1T Menu,
+prescales, and masks), algorithmic parameters, timing delays of various electronic components, etc. These elements
+are stored in the online database (OMDS) using XML format and are indexed with a series of keys. Once the detector
+is requested to take data, the L1T O2O fetches the configuration XMLs, extracts the relevant parameters, and saves
+them in the offline database stamped with a sequential run number. The main consumers of the resulting offline
+payloads are: High Level Trigger (HLT), Data Quality Monitoring (DQM), and Trigger Studies Group (TSG).
+<br><br>
+The L1T O2O workflow is briefly covered on slides <a href="http://kkotov.github.io/l1o2o/talks/2016.04.19/#4">#4</a>
+and <a href="http://kkotov.github.io/l1o2o/talks/2016.04.19/#5">#5</a> and the scripts' organization (although, a bit
+outdated) is outlined <a href="http://kkotov.github.io/l1o2o/talks/2015.04.20/#5">here</a>.
+<br><br>
+Pool Requests:
+<a href="https://github.com/cms-sw/cmssw/pull/15204">15204</a>,
+<a href="https://github.com/cms-sw/cmssw/pull/15846">15846</a>,
+<a href="https://github.com/cms-sw/cmssw/pull/16693">16693</a>,
+<a href="https://github.com/cms-sw/cmssw/pull/16664">16664</a>,
+<a href="https://github.com/cms-sw/cmssw/pull/17059">17059</a>,
+<a href="https://github.com/cms-sw/cmssw/pull/17295">17295</a>,
+<a href="https://github.com/cms-sw/cmssw/pull/17461">17461</a>
+<br>
+
+</p></td>
+<td width="48%"><br /></td></tr></table>
+<br>
+
+</body>
+</html>

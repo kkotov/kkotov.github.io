@@ -1,0 +1,44 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>EMTF</title>
+</head>
+<body>
+
+<h4>The Endcap Muon Track-Finder (EMTF)</h4>
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr valign="top">
+<td width="1%" align="right"></td>
+<td width="51%" class="vp">
+<p style="font-family: Helvetica"> <!--times, serif; font-size:14pt; font-style:italic">-->
+
+The EMTF [<a href="http://www.slideserve.com/pepin/mtf7-hardware-status/">1</a>,
+<a href="http://iopscience.iop.org/1748-0221/8/12/C12034">2</a>] is one of the custom-built
+electronic systems of the CMS Level-1 Trigger (L1T). By means of pattern recognition EMTF
+combines multiple track's segments produced by a particle in sensitive regions of the
+detector and evaluates track's properties. The most important property, the particle's
+momentum (or transverse momentum), is evaluated from track's bending in the inhomogeneous
+magnetic field.
+<br><br>
+The EMTF system is controlled and monitored via PCI express (PCIe) connection to a regular
+PC running the <a href="https://svnweb.cern.ch/trac/cactus/browser/trunk/cactuscore">SWATCH</a>
+cell instance (my pool requests to the cell software:
+<a href="https://github.com/batinkov/emtf_cell/pull/1">1</a>,
+<a href="https://github.com/batinkov/emtf_cell/pull/2">2</a>). A low-level management
+such as power-on/off sequences, monitoring of electronic components' temperatures, etc. is
+performed by the on-board microcontroller now running a
+<a href="https://svnweb.cern.ch/trac/cactus/browser/branches/madorsky_emtf/emtf_1704/mmc/">customized version</a> of
+<a href="https://espace.cern.ch/ph-dep-ESE-BE-uTCAEvaluationProject/MMC_project/default.aspx">CERN's MMC library</a>.
+<br><br>
+The track pT assignment is done with the precomputed values stored in a fast look-up
+table (LUT) memory. The 30 bits available for the pT LUT address can encode track's
+deflection angles given by relative positions of track segments, bend patters of
+individual track segments, etc. Exact address composition is a subject of the
+<a href="https://github.com/kkotov/emtfPtRegression">ongoing study</a>.
+The 18 bits of pT data encode pT, track's quality, reconstructed charge. 
+</p></td>
+<td width="48%"><br /></td></tr></table>
+<br>
+
+</body>
+</html>
+
