@@ -30,11 +30,12 @@ performed by the on-board microcontroller now running a
 <a href="https://espace.cern.ch/ph-dep-ESE-BE-uTCAEvaluationProject/MMC_project/default.aspx">CERN's MMC library</a>.
 <br><br>
 The track pT assignment is done with the precomputed values stored in a fast look-up
-table (LUT) memory. The 30 bits available for the pT LUT address can encode track's
+table (LUT) memory. Thirty bits available for the pT LUT address can encode track's
 deflection angles given by relative positions of track segments, bend patters of
-individual track segments, etc. Exact address composition is a subject of the
+individual track segments, and several other potentially useful track's parameters.
+The best address composition is a subject of an
 <a href="https://github.com/kkotov/emtfPtRegression">ongoing study</a>.
-The 18 bits of pT data encode pT, track's quality, reconstructed charge. 
+Eighteen bits of pT data encode pT value, track's quality, reconstructed charge. 
 </p></td>
 <td width="48%"><br /></td></tr></table>
 <br>
