@@ -20,12 +20,16 @@ momentum (or transverse momentum), is evaluated from track's bending in the inho
 magnetic field.
 <br><br>
 The EMTF system is controlled and monitored via PCI express (PCIe) connection to a regular
-PC running the <a href="http://cactus.web.cern.ch/cactus/tsdocs/index.html">SWATCH</a>
-cell instance (my pull requests to the cell software:
-<a href="https://github.com/batinkov/emtf_cell/pull/1">1</a>,
-<a href="https://github.com/batinkov/emtf_cell/pull/2">2</a>). A low-level management
+PC running a <a href="http://cactus.web.cern.ch/cactus/tsdocs/index.html">SWATCH</a>
+cell instance. This application provides an expert-level web-interface to the system
+for the purpose of operating and monitoring it. In the same time allows the central
+SWATCH framework to orchestrate EMTF along with all systems of the other L1T coherently.
+A more detailed EMTF Swatch cell description is available in an
+<a href="http://github.com/kkotov/emtf_cell/">obsolete github repository<a>
+<br><br>
+A low-level management
 such as power-on/off sequences, monitoring of electronic components' temperatures, etc. is
-performed by the on-board microcontroller now running a
+performed by the on-board microcontroller running a
 <a href="https://svnweb.cern.ch/trac/cactus/browser/branches/madorsky_emtf/emtf_1704/mmc/">customized version</a> of
 <a href="https://espace.cern.ch/ph-dep-ESE-BE-uTCAEvaluationProject/MMC_project/default.aspx">CERN's MMC library</a>.
 <br><br>
@@ -33,9 +37,9 @@ The track pT assignment is done with the precomputed values stored in a fast loo
 table (LUT) memory. Thirty bits available for the pT LUT address can encode track's
 deflection angles given by relative positions of track segments, bend patters of
 individual track segments, and several other potentially useful track's parameters.
-The best address composition is a subject of an
-<a href="https://github.com/kkotov/emtfPtRegression">ongoing study</a>.
-Eighteen bits of pT data encode pT value, track's quality, reconstructed charge. 
+The best address composition is a subject of a
+<a href="https://github.com/kkotov/emtfPtRegression">study</a>.
+Nine bits of pT data encode pT value, track's quality, and the reconstructed charge. 
 <br><br>
 Also, my Pool Requests to the emulator:
 <a href="https://github.com/abrinke1/cmssw/pull/4">4</a>,
