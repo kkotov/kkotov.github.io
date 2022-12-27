@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Types of certificates</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/combine/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js,npm/@xiee/utils/js/load-highlight.js" async></script>
+
+
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr />
+<p>title       : “Digital certificates”
+subtitle    :
+author      :
+job         :
+framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      #
+url:
+lib:    ../libraries
+assets: ../assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides</p>
+<p>— &amp;twocol</p>
+<h2>Types of certificates</h2>
+<p>*** =left</p>
+<img class=center width=60% src="hipaa.png"/>
+<p>*** =right</p>
+<img class=center width=100% src="covid.png"/>
+<p>*** =fullwidth</p>
+<img class=center width=60% src="cern.png"/>
+<p>— &amp;twocol</p>
+<h2>(Not always) seamless experience</h2>
+<br>
+<p>*** =left</p>
+<img class=center width=100% src="yellow.png"/>
+<p>*** =right</p>
+<img class=center width=60% src="meraki.png"/>
+(if you have not been to the office ~year)
+<br>
+<img class=center width=100% src="problem.png"/>
+<p>*** =fullwidth</p>
+<p>— &amp;twocol</p>
+<h2>Two problems of communication transport layer</h2>
+<p>— &amp;twocol</p>
+<h2>Two problems of communication transport layer</h2>
+<p>*** =left</p>
+<p>Identity</p>
+<img class=center width=73% src="terminator.png"/>
+<p>*** =right</p>
+<p>*** =fullwidth</p>
+<p>— &amp;twocol</p>
+<h2>Two problems of communication transport layer</h2>
+<p>*** =left</p>
+<p>Identity</p>
+<img class=center width=73% src="terminator.png"/>
+<p>*** =right</p>
+<p>Confidentiality</p>
+<img class=center width=80% src="motherland.jpg"/>
+<p>*** =fullwidth</p>
+<p>— .class #id</p>
+<h2>Solution to the identity problem</h2>
+<p>Digital signature from a trusted certification authority (CA) on identities of parties concerned:</p>
+<img class=center width=50% src="ca-diagram-b.png"/>
+<p>Trusting CA = you believe they verified I am who I claim to be when presenting signed certificate</p>
+<p>At CERN I physically went to the CA office with my badge and happy face for a couple of times</p>
+<p>AWS, Azure, Google can also act as CA (they have your billing address, but, likely, even more)</p>
+<p>— &amp;twocol</p>
+<h2>Certification Authorities</h2>
+<p>*** =left</p>
+<img class=center width=73% src="cashares.png"/>
+<p>*** =right</p>
+<p>For signing fee of 200-400 CHF they:</p>
+<ul>
+<li>
+<p>Ensure Public Key Infrastructure (PKI), e.g.:</p>
+<ul>
+<li>Linux: /etc/ssl/certs/ca-certificates.crt
+(all /usr/share/ca-certificates/mozilla/)</li>
+<li>OSX: Utilities/Keychain Access</li>
+</ul>
+</li>
+</ul>
+<p>(i.e. you start trusting CA automatically when
+install or update your browser or OS)</p>
+<ul>
+<li>Maintain Certificate Revocation List (CRL)</li>
+</ul>
+<p>*** =fullwidth</p>
+<p>— .class #id</p>
+<h2>Some practical moments</h2>
+<p>Creating certificate signing request (here RSA 2048 bits only, ECDSA requires an extra step):</p>
+<pre><code class="language-bash">openssl req -newkey rsa:2048 -keyout PRIVATEKEY.pem -out MYCSR.csr
+</code></pre>
+<p>Self-signing this request (using the same private key for simplicity):</p>
+<pre><code class="language-bash">openssl x509 -req -in MYCSR.csr -signkey PRIVATEKEY.pem -out CERT.crt
+</code></pre>
+<p>Examining certificate:</p>
+<pre><code class="language-bash">cat CERT.crt | openssl x509 -noout -text
+</code></pre>
+<p>(clients cannot modify any fields without breaking the signature)</p>
+<p>Creating a pk12 bundle with your certificate and private key to load into your browser</p>
+<pre><code class="language-bash">openssl pkcs12 -export -in CERT.crt -inkey PRIVATEKEY.pem -out CERT.p12
+</code></pre>
+<br>
+<pre><code class="language-bash">awk -v cmd='openssl x509 -noout -subject' '/BEGIN/{close(cmd)};{print | cmd}' &lt; /etc/ssl/certs/ca-certificates.crt
+</code></pre>
+<p>— .class #id</p>
+<h2>Fields in your certificate</h2>
+<pre><code class="language-bash">Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            3c:b2:f4:48:0a:00:e2:fe:eb:24:3b:5e:60:3e:c3:6b
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=GeoTrust Inc., OU=(c) 2007 GeoTrust Inc. - For authorized use only, CN=GeoTrust Primary Certification Authority - G2
+        Validity
+            Not Before: Nov  5 00:00:00 2007 GMT
+            Not After : Jan 18 23:59:59 2038 GMT
+        Subject: C=US, O=GeoTrust Inc., OU=(c) 2007 GeoTrust Inc. - For authorized use only, CN=GeoTrust Primary Certification Authority - G2
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (384 bit)
+                pub: 
+                    04:15:b1:e8:fd:03:15:43:e5:ac:eb:87:37:11:62:
+                    ...
+                ASN1 OID: secp384r1
+                NIST CURVE: P-384
+    Signature Algorithm: ecdsa-with-SHA384
+         30:64:02:30:64:96:59:a6:e8:09:de:8b:ba:fa:5a:88:88:f0:
+         ...
+</code></pre>
+<p>— .class #id</p>
+<h2>Solution to the confidentiality problem</h2>
+<p>Seems solved: I give you my public key with the certificate and you send me yours, right?</p>
+<p>In reality we use expensive asymmetric ciphers only during TLS (and SSH) handshake</p>
+<p>When handshaking, a new symmetric key is encrypted, exchanged, and used for the session</p>
+<pre><code class="language-bash">openssl s_client -showcerts  -connect cms.cern.ch:443
+</code></pre>
+<pre><code class="language-bash">    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-AES128-GCM-SHA256
+    Session-ID: 9DC55EEDFBB77EF3003E8199F55106A0BAB3016E237055A0604DBF3400933F60
+    Session-ID-ctx: 
+    Master-Key: 31BC2413EC47161328544ED0018FCD8291AD0A6ACDB1991BEA99142C8A78AB68C5BF9C751CB19BDE006E4A68A6FE5B3C
+    Key-Arg   : None
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 7200 (seconds)
+    TLS session ticket:
+    0000 - 49 52 65 49 c1 cd 8a 8a-b7 13 84 b5 44 54 a0 a6   IReI........DT..
+    ...
+</code></pre>
+<p>— .class #id</p>
+<h2>Summary</h2>
+<br>
+<ul>
+<li>
+<p>Digital certificates are everywhere these days</p>
+</li>
+<li>
+<p>You often don’t know until one expires and you run into troubles</p>
+</li>
+<li>
+<p>Fortunately, with openssl suite you can debug a problem to some level</p>
+</li>
+<li>
+<p>Most of the reported fields were mystery to me, now I understand some</p>
+</li>
+</ul>
+<p><a href="https://joehonton.medium.com/cipher-suites-demystified-ada2e97be9c9">https://joehonton.medium.com/cipher-suites-demystified-ada2e97be9c9</a>
+<a href="https://joehonton.medium.com/the-secret-handshake-sni-virtual-hosting-9dfe63818b82">https://joehonton.medium.com/the-secret-handshake-sni-virtual-hosting-9dfe63818b82</a>
+<a href="https://goteleport.com/blog/ssh-handshake-explained">https://goteleport.com/blog/ssh-handshake-explained</a>
+<a href="https://goteleport.com/blog/ssh-certificates/">https://goteleport.com/blog/ssh-certificates/</a>
+<a href="https://www.misterpki.com/openssl-s-client/">https://www.misterpki.com/openssl-s-client/</a>
+<a href="https://www.feistyduck.com/library/openssl-cookbook/online/ch-testing-with-openssl.html">https://www.feistyduck.com/library/openssl-cookbook/online/ch-testing-with-openssl.html</a>
+<a href="https://www.educba.com/what-is-an-algorithm/">https://www.educba.com/what-is-an-algorithm/</a>
+<a href="https://www.educba.com/digital-certificate/">https://www.educba.com/digital-certificate/</a>
+<a href="https://www.educba.com/what-is-digital-certificate/">https://www.educba.com/what-is-digital-certificate/</a>
+<a href="https://protonmail.com/blog/tls-ssl-certificate/#What-is-TLS">https://protonmail.com/blog/tls-ssl-certificate/#What-is-TLS</a>
+<a href="https://www.ssl.com/how-to/manually-generate-a-certificate-signing-request-csr-using-openssl/">https://www.ssl.com/how-to/manually-generate-a-certificate-signing-request-csr-using-openssl/</a>
+<a href="https://www.ssl.com/faqs/what-is-a-certificate-authority/">https://www.ssl.com/faqs/what-is-a-certificate-authority/</a></p>
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>

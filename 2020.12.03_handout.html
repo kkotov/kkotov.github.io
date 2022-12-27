@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title><a href="https://en.wikipedia.org/wiki/YAML">YAML Aint Markup Language</a></title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/combine/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js,npm/@xiee/utils/js/load-highlight.js" async></script>
+
+
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr />
+<p>title       : “How I built my Raspberry cluster”
+subtitle    :
+author      :
+job         :
+framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      #
+url:
+lib:    ../libraries
+assets: ../assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides</p>
+<p>— &amp;twocol</p>
+<h2><a href="https://en.wikipedia.org/wiki/YAML">YAML Aint Markup Language</a></h2>
+<br>
+<p>*** =left</p>
+<ul>
+<li>Whitespace indentation</li>
+<li>(#) — comments</li>
+<li>(-) — list member ([] for many)</li>
+<li>(:) — dictionary entry ({} for many)</li>
+<li>(—) — multiple documents</li>
+</ul>
+<p>*** =right</p>
+<pre><code class="language-js">--- # The Smiths
+- {name: John Smith, age: 33}
+- name: Mary Smith
+  age: 27
+- [name, age]: [Rae Smith, 4] # sequences as keys
+--- # People, by gender
+men: [John Smith, Bill Jones]
+women:
+  - Mary Smith
+  - Susan Williams
+</code></pre>
+<p>*** =fullwidth</p>
+<p>— .class #id</p>
+<h2>Ansible by a dummy</h2>
+<p>Ansible — an extensive list of (python) modules orchestrated within YAML</p>
+<p>Communication happens over the paswordless ssh (given .ssh/authorized_keys are set)</p>
+<p>Targets are stored in so called inventory lists, example:</p>
+<pre>
+[masters]
+master     ansible_host=192.168.0.157 ansible_user=root ansible_ssh_private_key_file=/home/kkotov/.ssh/id_rsa
+
+[workers]
+pi-01      ansible_host=192.168.0.234 ansible_user=root ansible_ssh_private_key_file=/home/kkotov/.ssh/id_rsa
+pi-02      ansible_host=192.168.0.207 ansible_user=root ansible_ssh_private_key_file=/home/kkotov/.ssh/id_rsa
+
+[workers:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[masters:vars]
+ansible_python_interpreter=/usr/bin/python3
+</pre>
+<p>— .class #id</p>
+<h2>Create a user</h2>
+<pre><code class="language-bash">- hosts: workers
+  become: yes
+  tasks:
+    - name: create the 'hdfs' user
+      user: name=hdfs append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: allow 'hdfs' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'hdfs ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: set up authorized keys for the hdfs user
+      authorized_key: user=hdfs key=&quot;{ {item}}&quot;
+      with_file:
+        - ~/.ssh/id_rsa.pub
+</code></pre>
+<p>Run it with:</p>
+<pre><code class="language-bash">ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts ./script.yml
+</code></pre>
+<p>— .class #id</p>
+<h2>Set hostnames and kernel parameters</h2>
+<pre><code class="language-bash">- hosts: workers
+  become: yes
+  tasks:
+    - name: set a hostname
+      hostname: {name: '{ { inventory_hostname }}'}
+
+    - name: set the hosts lookup
+      lineinfile:
+        dest: /etc/hosts
+        line: '{ {ansible_eth0.ipv4.address}}	{ {inventory_hostname}}'
+
+    - name: allow cgroups memory control
+      lineinfile:
+        path: /boot/cmdline.txt
+        regexp: '^(.*)$'
+        line: '\1 cgroup_enable=cpu cgroup_enable=memory'
+        backrefs: yes
+
+    - name: unconditionally reboot the machine with all defaults
+      reboot:
+</code></pre>
+<p>— .class #id</p>
+<h2>Three steps from next slides collapsed in one</h2>
+<pre><code class="language-bash">- hosts: workers
+  become: yes
+  tasks:
+   - name: install docker
+     apt: {name: docker.io, state: present, update_cache: true}
+   - name: install APT Transport HTTPS
+     apt: {name: apt-transport-https, state: present}
+   - name: add Kubernetes apt-key
+     apt_key: {url: &quot;https://packages.cloud.google.com/apt/doc/apt-key.gpg&quot;, state: present}
+   - name: add Kubernetes APT repository
+     apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes'
+   - name: install kubelet
+     apt: {name: kubelet='1.19.5-00', state: present, update_cache: true}
+   - name: install kubeadm
+     apt: {name: kubeadm='1.19.5-00', state: present}
+</code></pre>
+<p>— .class #id</p>
+<h2>Install docker</h2>
+<br>
+<pre><code class="language-bash">- hosts: workers
+  become: yes
+  tasks:
+   - name: install docker
+     apt:
+       name: docker.io
+       state: present
+       update_cache: true
+</code></pre>
+<p>— .class #id</p>
+<h2>Set up a new repo</h2>
+<pre><code class="language-bash">- hosts: all
+  become: yes
+  tasks:
+   - name: install APT Transport HTTPS
+     apt:
+       name: apt-transport-https
+       state: present
+
+   - name: add Kubernetes apt-key
+     apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+
+   - name: add Kubernetes APT repository
+     apt_repository:
+       repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+       state: present
+       filename: 'kubernetes'
+</code></pre>
+<p>— .class #id</p>
+<h2>Install kubelet service and kubeadm tool</h2>
+<pre><code class="language-bash">- hosts: all
+  become: yes
+  tasks:
+   - name: install kubelet
+     apt:
+       name: kubelet='1.19.5-00'
+       state: present
+       update_cache: true
+
+   - name: install kubeadm
+     apt:
+       name: kubeadm='1.19.5-00'
+       state: present
+</code></pre>
+<p>A newer version 1.20 is available, but it fails to work on Raspbian (works well on my laptop)</p>
+<p>— .class #id</p>
+<h2>Starting up a cluster</h2>
+<br>
+<pre><code class="language-bash">- hosts: master
+  become: yes
+  tasks:
+   - name: Turn swap off
+     shell: swapoff -a
+
+   - name: initialize the cluster
+     shell: kubeadm init --pod-network-cidr='10.244.0.0/16' &gt; /tmp/cluster_initialized.txt
+     args:
+       creates: /tmp/cluster_initialized.txt
+</code></pre>
+<p>— .class #id</p>
+<h2>Installing configuration locally</h2>
+<pre><code class="language-bash">- hosts: master
+  become: yes
+  tasks:
+   - name: create .kube directory
+     become: yes
+     become_user: kkotov
+     file:
+       path: $HOME/.kube
+       state: directory
+       mode: 0755
+
+   - name: copy admin.conf to user kube config
+     copy:
+       src: /etc/kubernetes/admin.conf
+       dest: /home/kkotov/.kube/config
+       remote_src: yes
+       owner: kkotov
+</code></pre>
+<p>— .class #id</p>
+<h2>Firing up the pod network</h2>
+<br>
+<pre><code class="language-bash">- hosts: master
+  tasks:
+   - name: install Pod network
+     become: yes
+     become_user: kkotov
+     shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml &gt; /tmp/pod_network_setup.txt
+     args:
+       creates: /tmp/pod_network_setup.txt
+</code></pre>
+<p>— .class #id</p>
+<h2>Joining nodes</h2>
+<pre><code class="language-bash">- hosts: master
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+    - name: set join command
+      set_fact: { join_command: &quot;{ { join_command_raw.stdout_lines[0] }}&quot; }
+
+- hosts: workers
+  become: yes
+  tasks:
+    - name: Turn swap off
+      shell: swapoff -a
+    - name: join cluster
+      shell: &quot;{ { hostvars['master'].join_command }} &gt;&gt; /tmp/node_joined.txt&quot;
+      args: { creates: /tmp/node_joined.txt }
+</code></pre>
+<p>— .class #id</p>
+<h2>Final touch</h2>
+<pre><code class="language-bash">kubectl get pods --namespace=kube-system
+</code></pre>
+<pre>
+NAME                                 READY   STATUS              RESTARTS   AGE
+coredns-66bff467f8-9wt47             0/1     ContainerCreating   0          11m
+coredns-66bff467f8-t5l8w             0/1     ContainerCreating   0          11m
+etcd-quickstart                      1/1     Running             0          11m
+kube-apiserver-quickstart            1/1     Running             0          11m
+kube-controller-manager-quickstart   1/1     Running             0          11m
+kube-proxy-9qks4                     1/1     Running             0          11m
+kube-scheduler-quickstart            1/1     Running             0          11m
+</pre>
+<p>Delete a line with <code>loop</code> using:</p>
+<pre><code class="language-bash">kubectl -n kube-system edit configmap coredns
+kubectl -n kube-system delete pod -l k8s-app=kube-dns
+</code></pre>
+<p>(<a href="https://stackoverflow.com/questions/53075796/coredns-pods-have-crashloopbackoff-or-error-state">https://stackoverflow.com/questions/53075796/coredns-pods-have-crashloopbackoff-or-error-state</a>)</p>
+<p>— .class #id</p>
+<h2>Conclusion</h2>
+<br>
+<p>You have created you Kubernetes cluster using Ansible scripts</p>
+<p>Ansible documentation (<a href="https://docs.ansible.com/ansible/latest/cli/ansible-doc.html">https://docs.ansible.com/ansible/latest/cli/ansible-doc.html</a>) is generally of a great help</p>
+<p>In addition, plenty of examples are the source of ready solutions (e.g. see example with yum:
+<a href="https://bitbucket.sophiagenetics.com/users/kkotov/repos/metrics/browse/exporters-release.yml">https://bitbucket.sophiagenetics.com/users/kkotov/repos/metrics/browse/exporters-release.yml</a>)</p>
+<p>Next thing (talk?) would be to use this setup for something cool</p>
+<p>Inspiration:
+<a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04">https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04</a></p>
+<p>— .class #id</p>
+<h2>Prerequisites</h2>
+<pre><code class="language-js">wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-12-04/2020-12-02-raspios-buster-armhf-lite.zip
+fdisk -l  2020-12-02-raspios-buster-armhf-lite.img
+echo '532480*512' | bc -l # for this image second partition starts at block 272629760
+sudo losetup -v -f -o 272629760  ./2020-12-02-raspios-buster-armhf-lite.img
+sudo mount -o rw /dev/loop10 /media/kkotov/qwe/
+sudo mkdir /media/kkotov/qwe/root/.ssh
+sudo chmod 700 /media/kkotov/qwe/root/.ssh
+sudo vi /media/kkotov/qwe/root/.ssh/authorized_keys   # &lt;- here goes your id_rsa.pub
+sudo chmod 600 /media/kkotov/qwe/root/.ssh/authorized_keys
+sudo umount /media/kkotov/qwe
+sudo losetup -d /dev/loop10
+echo '8192*512' | bc -l # first partition starts at block 4194304 
+sudo losetup -v -f -o 4194304  ./2020-12-02-raspios-buster-armhf-lite.img
+sudo mount -o rw /dev/loop10 /media/kkotov/qwe/
+sudo touch /media/kkotov/qwe/ssh
+sudo umount /media/kkotov/qwe
+sudo losetup -d /dev/loop10
+</code></pre>
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Real world example</title>
+
+
+
+
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr />
+<p>title       : “Hands on JSON Web Tokens”
+subtitle    :
+author      :
+job         :
+framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      #
+url:
+lib:    ../libraries
+assets: ../assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides</p>
+<p>— &amp;fourcol</p>
+<h2>Real world example</h2>
+<img class=center width=50% src="address.png"/>
+<br>
+<p>*** =farleft
+<img class=center width=95% src="login.png"/></p>
+<p>*** =left
+<img class=center width=95% src="pass.png"/></p>
+<p>*** =right
+<img class=center width=95% src="jira.png"/></p>
+<p>*** =farright
+<img class=center width=95% src="mail.png"/></p>
+<p>*** =fullwidth</p>
+<p>Browser is first forwarded from outlook.office365.com (top) to login.microsoft.com (bottom)
+And then it goes back to outlook, but the later has access to my emails (note, jira also works!)</p>
+<p>— .class #id</p>
+<h2>OAuth2 Vocabulary</h2>
+<p>Interacting bodies:</p>
+<ul>
+<li><span style="font-weight:bold; color:red">Resource Owner</span>: <span style="font-weight:bold; color:green">myself</span>, keep my emails with microsoft</li>
+<li><span style="font-weight:bold; color:red">Client</span>: <span style="font-weight:bold; color:green">Outlook</span>, the application that needs full access to my emails on my behalf</li>
+<li><span style="font-weight:bold; color:red">Authorization Server</span>: <span style="font-weight:bold; color:green">login.microsoft</span>, knows me and can verify my identity</li>
+<li><span style="font-weight:bold; color:red">Resource Server</span>: <span style="font-weight:bold; color:green">Data Storage Layer</span>, my mailbox, OneDrive documents, …</li>
+</ul>
+<p>Additional terms:</p>
+<ul>
+<li><span style="font-weight:bold; color:red">Scope</span>: permissions that outlook requests to access my mailbox</li>
+<li><span style="font-weight:bold; color:red">Consent</span>: (absent) confirmation between login server and myself to grant rights to outlook</li>
+<li><span style="font-weight:bold; color:red">Client ID/secret</span>: outlook and login server are actually old friends recognizing each other</li>
+<li><span style="font-weight:bold; color:red">Authorization code</span>: temporary short-lived code to be exchanged for Access Token by client</li>
+<li><span style="font-weight:bold; color:red">Response Type</span>, <span style="font-weight:bold; color:red">Redirect URI</span>, <span style="font-weight:bold; color:red">Access Token</span>, …</li>
+</ul>
+<p>— .class #id</p>
+<img class=center width=28% src="oauth2.jpg"/>
+<p>— .class #id</p>
+<h2>Establishing trust in a nutshell</h2>
+<p>Alice asks Bob to bring her valuables back from Carol, but how Carol knows Bob is not lying?</p>
+<p>Carol asks Alice directly. And this is what happens in the example above:</p>
+<ul>
+<li>Mail <span style="color:red">client</span> forwards my browser to <span style="color:red">authorization server</span> where I type my credentials</li>
+<li><span style="color:red">Authorization Server</span> gives <span style="color:red">Authorization Code</span> and forwards me back to the <span style="color:red">client</span></li>
+<li>Mail <span style="color:red">client</span> contacts <span style="color:red">Authorization Server</span> directly and the code proves it acts on my behalf</li>
+</ul>
+<p><span style="color:red">Authorization Server</span> doesn’t keep my emails, Data Storage Layer does but it needs simple pass</p>
+<p>Here JSON Web Token kicks in: <span style="color:red">Authorization Server</span> verifies the <span style="color:red">code</span> and hand JWT to the <span style="color:red">client</span></p>
+<p>— .class #id</p>
+<h2>JSON Web Token</h2>
+<p>JWT= “compact and self-contained way for securely transmitting info between parties as JSON”</p>
+<p>JWT consists of base64-encoded <span style="font-weight:bold; color:green">Header</span>, <span style="font-weight:bold; color:brown">Payload</span>, and <span style="font-weight:bold; color:magenta">Signature</span> separated by ‘.’ (<span style="color:green">xxx</span>.<span style="color:brown">yyy</span>.<span style="color:magenta">zzz</span>)</p>
+<p><span style="color:green">Header</span> typically consists of token type and signing algorithm, e.g.: <span style="color:green">{“alg”:“HS256”, “typ”:“JWT”}</span></p>
+<p><span style="color:brown">Payload</span> contains claims, statements about an entity (typically, the user) and additional data:</p>
+<ul>
+<li><a href="https://tools.ietf.org/html/rfc7519#section-4.1">registered (predefined) claims</a>: e.g. iss (issuer), exp (expiration), sub (subject), aud (audience)</li>
+<li><a href="https://www.iana.org/assignments/jwt/jwt.xhtml">public claims</a>: extensible list of generally useful claims</li>
+<li><a href="https://tools.ietf.org/html/rfc7519#section-4.3">private claims</a>: custom claims specific for the application (any key-value pairs)</li>
+</ul>
+<p><span style="color:magenta">Signature</span> verifies message’s integrity, and, if signed with a private key, sender’s identity; e.g.:
+HMACSHA256( base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret)</p>
+<p>— .class #id</p>
+<h2>Generating a token in Go</h2>
+<img class=center width=90% src="tokenizer.png"/>
+<p>(time for a small demo)</p>
+<p>— .class #id</p>
+<h2>Validating a token in Go</h2>
+<img class=center width=75% src="parser2.png"/>
+<p>— .class #id</p>
+<h2>Summary</h2>
+<p>JWT is secure (i.e. signed), general purpose, and small overhead concept</p>
+<p>Authorization with JWT offers a great flexibility to implement roles, views and specializations
+(for example, same endpoint behaves differently whether you are SG service or a partner)
+<br></p>
+<p>Source of info in this presentation:</p>
+<p><a href="https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc">https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc</a></p>
+<p><a href="https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth">https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth</a></p>
+<p><a href="https://jwt.io/introduction">https://jwt.io/introduction</a></p>
+<p><a href="https://fusionauth.io/blog/2021/02/18/securing-golang-microservice/">https://fusionauth.io/blog/2021/02/18/securing-golang-microservice/</a></p>
+<p><a href="https://testdriven.io/blog/oauth-python/">https://testdriven.io/blog/oauth-python/</a></p>
+<p>— &amp;fourcol</p>
+<h2>Similar scheme</h2>
+<img class=center width=50% src="support.png"/>
+<br>
+<p>*** =farleft
+<img class=center width=95% src="paypal2.png"/></p>
+<p>*** =left
+<img class=center width=95% src="paypal3.png"/></p>
+<p>*** =right
+<img class=center width=95% src="paypal9.png"/></p>
+<p>*** =farright
+<img class=center width=95% src="paypal6.png"/></p>
+<p>*** =fullwidth</p>
+<p>Address bar: browser is forwarded from support.meduza.io (top) to paypal.com (bottoms)</p>
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>

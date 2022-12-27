@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Scalable solutions for processing lots of data</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/combine/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js,npm/@xiee/utils/js/load-highlight.js" async></script>
+
+
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr />
+<p>title       : “Streaming with Apache Spark”
+subtitle    :
+author      :
+job         :
+framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      #
+url:
+lib:    ../libraries
+assets: ../assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides</p>
+<p>— .class #id</p>
+<h2>Scalable solutions for processing lots of data</h2>
+<p>Usual idea: leverage parallelism using cheap commodity hardware</p>
+<p>Software facilitators (in layman’s terms):</p>
+<ul>
+<li>old-school job schedulers like <a href="https://research.cs.wisc.edu/htcondor/">HTCondor</a>, <a href="https://en.wikipedia.org/wiki/Platform_LSF">Platform LSF</a>, …</li>
+<li>master/agent cluster management systems like <a href="http://mesos.apache.org/">Mesos</a> (good old queue of jobs), <a href="https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html">YARN</a> (jobs’ queue), <a href="https://kubernetes.io/">Kubernetes</a> (service-oriented load balancing)</li>
+<li>pipeline frameworks like Sophia/Executor, <a href="https://hadoop.apache.org/">Hadoop/Ecosystem</a>, <a href="https://spark.apache.org/">Apache/Spark</a></li>
+</ul>
+<p>Recent timeline of relevant technologies:
+<img class=center src="timeline.png" width=500></p>
+<p>— .class #id</p>
+<h2>Vocabulary</h2>
+<p>Your dataset is big and, therefore, becomes partitioned across many disks on many nodes</p>
+<p><span style="color:red">Map</span> phase: supply every worker node with instruction on how to digest its own partition</p>
+<p><span style="color:red">Reduce</span> phase: aggregate results of <span style="color:red">map</span> phase from every worker node</p>
+<p>Example in pySpark’s DataFrame syntax (a very naive example):</p>
+<pre><code class="language-python">df = sqlCtx.createDataFrame([('Alice',6),('Bob',10),('Alice',8),('Bob',4)],['name','score'])
+# Transformations: define an instruction (no work is done by nodes here):
+halved = udf(lambda s: s/2., FloatType()) # User Defined Function to dispatch to workers
+df2 = df.select(df.name, halved(df.score).alias('grade')) \ # clear map stage
+        .groupBy('name') \ # can be still be a map stage on individual workers
+        .avg('grade')      # reduce stage
+# Action: trigger the pipeline to execute
+df2.collect()
+# [Row(name=u'Alice', avg(grade)=3.5), Row(name=u'Bob', avg(grade)=3.5)]
+</code></pre>
+<p>— .class #id</p>
+<h2>Apache Ecosystem</h2>
+<img class=center src="components.png" width=500>
+<p>A toolbox seamlessly integrating with Kafka, HDFS, Avro/Parquet, databases, …</p>
+<p>Scala and Java are languages of choice, but python and even R are supported</p>
+<p>Flexible for the chaise of cluster management to run on (supports YARN, Mesos, Kubernetes)</p>
+<p>— .class #id</p>
+<h2>Example problem</h2>
+<p>Assuming the underlying services are set up (check the backup slides how to do so) let us:</p>
+<ul>
+<li>push some json messages into Kafka</li>
+<li>extract and transform them in interactive jupyter session of Spark</li>
+<li>load the processed events into PostgresDB</li>
+</ul>
+<p>For the sake of simplicity, let us assume a trivial example of events (identified with
+<span style="color:magenta">eventId</span>) happening at different parts of the world
+(identified with <span style="color:magenta">latitude</span> and <span style="color:magenta">longitude</span>).</p>
+<p>Let us load these events into a database and augment them with distance calculated as follows:
+$$
+a = sin^2(\Delta\phi/2) + cos \phi_1 \cdot cos \phi_2 \cdot sin^2(\Delta\lambda/2)
+$$
+$$
+d = 2\cdot atan2(\sqrt{a}, \sqrt{1-a}) \cdot R
+$$</p>
+<p>— .class #id</p>
+<h2>Preparatory work: source, sink, jupyter</h2>
+<pre><code class="language-bash">kafka-topics.sh --create   --topic my-events --bootstrap-server localhost:9092
+kafka-console-producer.sh  --topic my-events --bootstrap-server localhost:9092
+&gt;{&quot;eventId&quot;:&quot;Alex&quot;,      &quot;latitude&quot;: 47.000712,  &quot;longitude&quot;: 6.9290703}
+&gt;{&quot;eventId&quot;:&quot;Khristian&quot;, &quot;latitude&quot;: 46.2244357, &quot;longitude&quot;: 6.1010681}
+&gt;{&quot;eventId&quot;:&quot;Florian&quot;,   &quot;latitude&quot;: 46.443035,  &quot;longitude&quot;: 6.8769673}
+^D
+</code></pre>
+<pre><code class="language-bash">docker exec -it --user kkotov &lt;postgres_container_id&gt; psql
+&gt; CREATE TABLE my_events (eventId VARCHAR, CONSTRAINT PKId5 PRIMARY KEY(eventId),
+                          latitude FLOAT, longitude FLOAT, distance FLOAT);
+</code></pre>
+<pre><code class="language-bash">wget https://jdbc.postgresql.org/download/postgresql-9.4.1207.jar
+export PYSPARK_SUBMIT_ARGS=&quot;--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 --driver-class-path postgresql-43.2.18.jar --jars postgresql-42.2.18.jar --master local[2] pyspark-shell&quot;
+/Users/kkotov/monitoring/spark-3.0.1-bin-without-hadoop/bin/pyspark --master yarn
+</code></pre>
+<p>— .class #id</p>
+<h2>Extracting and parsing data from Kafka</h2>
+<pre><code class="language-bash">df = (spark         # Spark context is the entry point
+  .read             # operation
+  .format(&quot;kafka&quot;)  # use Kafka library
+  .option(&quot;kafka.bootstrap.servers&quot;, &quot;localhost:9092&quot;) # Kafka broker
+  .option(&quot;subscribe&quot;, &quot;my-events&quot;) # Kafka topic
+  .load())
+df = df.selectExpr(&quot;CAST(key AS STRING)&quot;, &quot;CAST(value AS STRING)&quot;, &quot;timestamp&quot;)
+
+schema = StructType([
+                         StructField(&quot;eventId&quot;,   StringType()),
+                         StructField(&quot;latitude&quot;,  FloatType()),
+                         StructField(&quot;longitude&quot;, FloatType())
+                    ])
+df2 = df.select(from_json(col(&quot;value&quot;), schema).alias(&quot;my_events&quot;), &quot;timestamp&quot;) \
+        .select(col(&quot;my_events.eventId&quot;),
+                col(&quot;my_events.latitude&quot;),
+                col(&quot;my_events.longitude&quot;))
+</code></pre>
+<p>— .class #id</p>
+<h2>Transforming and Loading data to DB</h2>
+<pre><code class="language-bash">df3 = \
+  df2.withColumn('dPhi',   col('latitude') *3.1416/180. - 46.51287 *3.1416/180.) \
+     .withColumn('dTheta', col('longitude')*3.1416/180. - 6.5468433*3.1416/180.) \
+     .withColumn('a', pow(sin(col('dPhi')/2),2) \
+          + .688192*cos(col('latitude')*3.1416/180.)*pow(sin(col('dTheta')/2),2) ) \
+     .withColumn('distance', 2*6371*atan2(pow(col('a'),0.5),pow(1-col('a'),0.5)) ) \
+     .select(&quot;eventId&quot;,&quot;latitude&quot;,&quot;longitude&quot;,&quot;distance&quot;)
+
+df3.write \
+    .format(&quot;jdbc&quot;) \
+    .option(&quot;url&quot;, &quot;jdbc:postgresql:kkotov&quot;) \
+    .option(&quot;dbtable&quot;, &quot;my_events&quot;) \
+    .option(&quot;user&quot;, &quot;kkotov&quot;) \
+    .option(&quot;password&quot;, &quot;kkotov&quot;) \
+    .mode(&quot;overwrite&quot;) \
+    .save()
+</code></pre>
+<p>— .class #id</p>
+<h2>Turning it into a stream</h2>
+<pre><code class="language-bash">dfs = spark \
+  .readStream \
+  .format(&quot;kafka&quot;) \
+  .option(&quot;kafka.bootstrap.servers&quot;, &quot;localhost:9092&quot;) \
+  .option(&quot;subscribe&quot;, &quot;my-events&quot;) \
+  .option(&quot;startingOffsets&quot;, &quot;latest&quot;) \
+  .load()
+dfs.selectExpr(&quot;CAST(value AS STRING)&quot;, &quot;timestamp&quot;) \
+   .select(from_json(col(&quot;value&quot;), schema).alias(&quot;my_events&quot;), &quot;timestamp&quot;) \
+   .select(col(&quot;my_events.eventId&quot;), col(&quot;my_events.latitude&quot;), col(&quot;my_events.longitude&quot;)) \
+   .writeStream \
+   .outputMode(&quot;complete&quot;) \
+   .option(&quot;truncate&quot;, &quot;false&quot;)\
+   .format(&quot;console&quot;) \
+   .trigger(processingTime='1 seconds') \
+   .outputMode(&quot;update&quot;) \
+   .start()
+</code></pre>
+<p>— .class #id</p>
+<h2>Summary</h2>
+<p>Using Spark might be an overkill for our simple monitoring tasks, but it brings ease</p>
+<p>Streaming into DB requires a simple sink development or use of 3rd party alternatives:
+<a href="https://github.com/sutugin/spark-streaming-jdbc-source">https://github.com/sutugin/spark-streaming-jdbc-source</a> ,
+<a href="https://github.com/AbsaOSS/Jdbc2S">https://github.com/AbsaOSS/Jdbc2S</a></p>
+<p>Useful links and random examples:</p>
+<ul>
+<li><a href="https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html">https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html</a></li>
+<li><a href="https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html">https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html</a></li>
+<li><a href="https://mallikarjuna_g.gitbooks.io/spark/content/spark-sql-streaming-sink.html">https://mallikarjuna_g.gitbooks.io/spark/content/spark-sql-streaming-sink.html</a></li>
+<li><a href="https://jaceklaskowski.gitbooks.io/spark-structured-streaming/content/spark-sql-streaming-MemorySink.html">https://jaceklaskowski.gitbooks.io/spark-structured-streaming/content/spark-sql-streaming-MemorySink.html</a></li>
+<li><a href="http://www.stevedem.com/using-databricks-to-extract-json-schema/">http://www.stevedem.com/using-databricks-to-extract-json-schema/</a></li>
+<li><a href="https://github.com/indiacloudtv/structuredstreamingkafkapyspark/blob/master/pyspark_structured_streaming_kafka_demo.py">https://github.com/indiacloudtv/structuredstreamingkafkapyspark/blob/master/pyspark_structured_streaming_kafka_demo.py</a></li>
+<li><a href="https://github.com/kkotov/emtfPtRegression/blob/master/ModelSelection.ipynb">https://github.com/kkotov/emtfPtRegression/blob/master/ModelSelection.ipynb</a></li>
+<li><a href="https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/foreach">https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/foreach</a></li>
+<li><a href="https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/production">https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/production</a></li>
+</ul>
+<p>— .class #id</p>
+<p><br><br><br>
+[\Large Backup]</p>
+<p>— .class #id</p>
+<h2>Set up Hadoop YARN</h2>
+<pre><code class="language-bash">sudo systemsetup -setremotelogin on
+sudo systemsetup -getremotelogin
+# edit ~/.ssh/authorized_keys for passwordless access
+cd /Users/kkotov/monitoring/
+wget 'https://downloads.apache.org/hadoop/common/hadoop-2.10.1/hadoop-2.10.1.tar.gz'
+tar -xzf 'hadoop-2.10.1.tar.gz'
+cd 'hadoop-2.10.1/etc/hadoop/'
+# download core-site.xml, mapred-site.xml, yarn-site.xml, hdfs-site.xml from:
+# https://bitbucket.sophiagenetics.com/users/kkotov/repos/miscellaneous/raw/2021.01.21/
+# Change paths for HDFS namenode and datanode directories in hdfs-site.xml and create those
+cd ../../
+hadoop-2.10.1/bin/hdfs namenode -format
+hadoop-2.10.1/sbin/start-dfs.sh
+hadoop-2.10.1/sbin/start-yarn.sh
+# now check hdfs health on http://localhost:50070
+</code></pre>
+<p>Bonus point: setting up a multi-node cluster is just adding nodes here: etc/hadoop/slaves</p>
+<p>— .class #id</p>
+<h2>Setting up Apache Spark (slide 1)</h2>
+<pre><code class="language-bash">wget 'https://downloads.apache.org/spark/spark-3.0.1/spark-3.0.1-bin-without-hadoop.tgz'
+tar -xzf 'spark-3.0.1-bin-without-hadoop.tgz'
+# For MacOS apply the fix here: https://stackoverflow.com/questions/33968422/bin-bash-bin-java-no-such-file-or-directory-error-in-yarn-apps-in-macos
+cat &lt;&lt; EOF &gt; '/Users/kkotov/monitoring/spark-3.0.1-bin-without-hadoop/conf/spark-env.sh'
+export PYSPARK_PYTHON=/usr/local/opt/python@3.9/bin/python3
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export SPARK_DIST_CLASSPATH='/Users/kkotov/monitoring/hadoop-2.10.1/etc/hadoop/'
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/common/lib/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/common/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/hdfs/
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/hdfs/lib/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/hdfs/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/yarn/lib/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/yarn/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/mapreduce/lib/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/share/hadoop/mapreduce/*
+export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/contrib/capacity-scheduler/*.jar
+EOF
+</code></pre>
+<p>— .class #id</p>
+<h2>Setting up Apache Spark (slide 2)</h2>
+<pre><code class="language-bash">cat &lt;&lt; EOF &gt;&gt; ~/.bashrc
+export HADOOP_HOME='/Users/kkotov/monitoring/hadoop-2.10.1'
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_CONF_DIR='/Users/kkotov/monitoring/hadoop-2.10.1/etc/hadoop/'
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+export SPARK_HOME='/Users/kkotov/monitoring/spark-3.0.1-bin-without-hadoop'
+export SPARK_DIST_CLASSPATH=`hadoop classpath`
+export PYSPARK_PYTHON=/usr/local/opt/python@3.9/bin/python3 # jupyter update pulled python 3.9, what a headache!
+export PYSPARK_DRIVER_PYTHON=&quot;jupyter&quot;
+export PYSPARK_DRIVER_PYTHON_OPTS=&quot;notebook&quot;
+export PATH=$PATH:$SPARK_HOME/bin
+EOF
+</code></pre>
+<p>— .class #id</p>
+<h2>Setting up Jupyter</h2>
+<pre><code class="language-bash">cat &lt;&lt; EOF &gt; ~/.jupyter/kernels/pyspark/kernel.json
+{&quot;display_name&quot;: &quot;pySpark (Spark 3.0.1)&quot;,
+&quot;language&quot;: &quot;python3&quot;,
+&quot;argv&quot;: [&quot;/usr/local/opt/python@3.9/bin/python3&quot;,&quot;-m&quot;,&quot;ipykernel&quot;,&quot;-f&quot;,&quot;{connection_file}&quot;],
+&quot;env&quot;: {
+     &quot;CAPTURE_STANDARD_OUT&quot;: &quot;true&quot;,
+     &quot;CAPTURE_STANDARD_ERR&quot;: &quot;true&quot;,
+     &quot;SEND_EMPTY_OUTPUT&quot;: &quot;false&quot;,
+     &quot;SPARK_HOME&quot;: &quot;/Users/kkotov/monitoring/spark-3.0.1-bin-without-hadoop/&quot;
+ }
+}
+EOF
+</code></pre>
+<pre><code class="language-bash">cat &lt;&lt; EOF &gt;&gt; ~/.jupyter/jupyter_notebook_config.py
+c.NotebookApp.allow_remote_access = True
+c.NotebookApp.ip = '*'
+EOF
+</code></pre>
+<p>— .class #id</p>
+<h2>Setting up Postgres</h2>
+<pre><code class="language-bash"># check background info on https://hub.docker.com/_/postgres
+wget https://bitbucket.sophiagenetics.com/users/kkotov/repos/miscellaneous/raw/2021.01.21/postgres.yml
+docker-compose -f postgres.yml up
+
+docker ps
+docker exec -it &lt;postgres_container_id&gt; bash
+adduser kkotov
+^D
+
+docker exec -it --user postgres &lt;postgres_container_id&gt; psql
+create role kkotov with createdb login password 'kkotov';
+create database kkotov with owner kkotov encoding 'UTF8';
+^D
+
+docker exec -it --user kkotov &lt;postgres_container_id&gt; psql
+</code></pre>
+<p>— .class #id</p>
+<h2>Setting up Kafka</h2>
+<pre><code class="language-bash">wget 'https://downloads.apache.org/kafka/2.7.0/kafka_2.13-2.7.0.tgz'
+tar -xzf 'kafka_2.13-2.7.0.tgz'
+export PATH=${PATH}:'/Users/kkotov/monitoring/kafka_2.13-2.7.0/bin/'
+
+zookeeper-server-start.sh '/Users/kkotov/monitoring/kafka_2.13-2.7.0/config/zookeeper.properties'
+kafka-server-start.sh '/Users/kkotov/monitoring/kafka_2.13-2.7.0/config/server.properties'
+</code></pre>
+<p>— .class #id</p>
+<h2>Setting up ksqlDB</h2>
+<p>Start docker-compose from <a href="https://ksqldb.io/quickstart.html">https://ksqldb.io/quickstart.html</a> (e.g. Kafka broker elsewhere option)</p>
+<!--
+{"eventId":"Jonas", "latitude": 46.51287, "longitude": 6.5468433}
+-->
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>

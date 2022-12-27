@@ -1,0 +1,189 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+  font-size: 16px;
+  color: #fff;
+  background-color: #F0F0F0;
+}
+
+.header {
+  background-color: #D3D3D3;
+  margin: 0px;
+  text-align: center;
+  color: #111111;
+}
+
+#self {
+  background-color: #DADADA;
+  color: #000000;
+  margin-left: 20px;
+  clear: right;
+}
+
+#self a {
+  color: #606060;
+}
+
+#self a:hover {
+  background: #c0c0c0;
+}
+
+
+/* NAVBAR BEGIN */
+#header-nav {
+  background-color: #909090;
+  border-radius: 0;
+  border: 0;
+}
+
+#logo-img {
+  background: url("https://avatars.githubusercontent.com/u/11047399?v=4") no-repeat;
+  background-size: 100%;
+  width: 75px;
+  height: 75px;
+  margin: 10px 10px 10px 10px;
+}
+
+.navbar-brand h1 {
+  font-family: 'Lora', serif;
+  color: #EEEEEE;
+  font-size: 1.5em;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px #222;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 0.75;
+}
+
+.navbar-brand a:hover, .navbar-brand a:focus {
+  text-decoration: none;
+}
+
+.navbar-brand p {
+  color: #000000;
+  text-transform: uppercase;
+  font-size: .7em;
+  margin-top: 15px;
+}
+
+.navbar-brand p span {
+  vertical-align: middle;
+}
+
+#nav-list {
+  margin-top: 10px;
+}
+
+#nav-list a {
+  color: #F0F0F0;
+  text-align: center;
+}
+
+#nav-list a:hover {
+  background: #c0c0c0;
+}
+
+#nav-list a span {
+  font-size: 1.2em;
+}
+
+.navbar-header button.navbar-toggle, .navbar-header .icon-bar {
+  border: 1px solid #c0c0a0;
+}
+.navbar-header button.navbar-toggle {
+  clear: both;
+  margin-top: -10px;
+}
+/* NAVBAR END */
+
+/* TILES */
+#presentations-tile, #hobbies-tile {
+  height: 250px;
+  width: 100%;
+  margin-bottom: 15px;
+  position: relative;
+  border: 2px solid #D3D3D3;
+  overflow: hidden;
+}
+
+#presentations-title {
+  background-color: #D3D3D3;
+  margin: 0px;
+  text-align: center;
+  color: #111111;
+}
+/* TILES END */
+
+/* PRESENTATIONS */
+.handout {
+  position: relative;
+  border: 2px solid #D3D3D3;
+  overflow: hidden;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 15px;
+}
+
+.handout:hover {
+  box-shadow: 0 1px 5px 1px #D3D3D3;
+}
+
+/* FOOTER */
+.panel-footer {
+  background-color: #909090;
+}
+
+.panel-footer a {
+  color: #F0F0F0;
+}
+
+.panel-footer a:hover {
+  background: #c0c0c0;
+}
+/* FOOTER END */
+
+/* desktop */
+@media (min-width: 1200px) {
+}
+
+/* netbook */
+@media (min-width: 992px) and (min-width: 1199px) {
+}
+
+/* tablet */
+@media (min-width: 768px) and (max-width: 991px) {
+}
+
+/* mobile */
+@media (max-width: 767px) {
+  .navbar-brand {
+    padding-top: 10px;
+    height: 50px;
+  }
+  .navbar-brand h1 {
+    padding-top: 4px;
+    font-size: 3.53vw;
+  }
+  .navbar-brand p {
+    font-size: 1.65vw;
+  }
+  #collapsable-nav a {
+    font-size: 1.0em;
+  }
+  #collapsable-nav a span {
+    font-size: 1.2em;
+    margin-left: 5px;
+  }
+
+  .col-xxs-12 {
+    position: relative;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    float: left;
+    width: 100%;
+  }
+}

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Refresher from Cornelia’s talk 2021.02.11</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/combine/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js,npm/@xiee/utils/js/load-highlight.js" async></script>
+
+
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr />
+<p>title       : “Hands on k8s (by a dummy)”
+subtitle    :
+author      :
+job         :
+framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      #
+url:
+lib:    ../libraries
+assets: ../assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides</p>
+<p>— .class #id</p>
+<h2>Refresher from Cornelia’s talk 2021.02.11</h2>
+<img width=100% src="components-of-kubernetes.svg"/>
+<p><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/">The Kubernetes control plane continually and actively manages every object’s actual state to match the desired state you supplied.</a></p>
+<p>— &amp;twocol</p>
+<h2>Describing a Kubernetes REST object (in YAML)</h2>
+<p>*** =left
+Required Fields:</p>
+<ul>
+<li><span style="font-weight:bold; color:red">apiVersion</span> — version of the Kubernetes API to create this object</li>
+<li><span style="font-weight:bold; color:red">kind</span> — kind of object (more later)</li>
+<li><span style="font-weight:bold; color:red">metadata</span> — unique object identifier (e.g. name string, UID, optional namespace) +
+<ul>
+<li><span style="font-weight:bold; color:red">labels</span> — (optional) grouping handle</li>
+</ul>
+</li>
+<li><span style="font-weight:bold; color:red">spec</span> — object-specific desired state, e.g.:
+<ul>
+<li><span style="font-weight:bold; color:red">replicas</span> — number of pods to run</li>
+<li><span style="font-weight:bold; color:red">containers</span> — containers’ config</li>
+<li><span style="font-weight:bold; color:red">selector</span> — label-based relation</li>
+</ul>
+</li>
+</ul>
+<p>*** =right</p>
+<pre><code class="language-js">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2 # run 2 of instances (pods)
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:'1.14.2'
+        ports:
+        - containerPort: 80
+</code></pre>
+<p>*** =fullwidth</p>
+<p>— .class #id</p>
+<h2>Hands on …</h2>
+<p>Fire it up:</p>
+<pre><code class="language-bash">kubectl apply -f https://k8s.io/examples/application/deployment.yaml
+kubectl get deployments
+kubectl rollout status deployment/nginx-deployment
+kubectl get deployments
+kubectl get rs
+kubectl get pods --show-labels
+kubectl expose deployment/nginx-deployment --type=&quot;NodePort&quot; --port 80
+curl $(minikube ip):30486
+</code></pre>
+<p>Rollout update:</p>
+<pre><code class="language-bash">kubectl set image deployment/nginx-deployment 'nginx=nginx:1.16.1' --record
+kubectl rollout status deployment/nginx-deployment
+kubectl get rs
+# RollingUpdateStrategy:  25% max unavailable, 25% max surge
+kubectl describe deployments
+# kubectl edit deployment.v1.apps/nginx-deployment
+</code></pre>
+<p>— .class #id</p>
+<h2>More flexibility</h2>
+<p>Breaking and fixing it:</p>
+<pre><code class="language-bash">kubectl get rs
+kubectl get pods
+
+kubectl rollout history deployment.v1.apps/nginx-deployment
+kubectl rollout history deployment.v1.apps/nginx-deployment --revision=2
+kubectl rollout undo deployment.v1.apps/nginx-deployment
+kubectl get deployment nginx-deployment
+</code></pre>
+<p>Scaling it:</p>
+<pre><code class="language-bash">kubectl scale deployment.v1.apps/nginx-deployment --replicas=10
+kubectl autoscale deployment.v1.apps/nginx-deployment --min=10 --max=15 --cpu-percent=80
+</code></pre>
+<p>Deleting:</p>
+<pre><code class="language-bash">kubectl delete deployment nginx-deployment
+kubectl get pods
+</code></pre>
+<p>— .class #id</p>
+<h2>Workload resources</h2>
+<p>We just played with <code>deployment</code> — one of workload resources to manage one or more Pods:</p>
+<ul>
+<li>Deployment — manages stateless instances (pods) based on identical container spec</li>
+<li>StatefulSet — same as deployment, but maintains identity and a state by means of:
+<ul>
+<li>stable, unique network identifiers.</li>
+<li>stable, persistent storage.</li>
+<li>ordered, graceful deployment and scaling.</li>
+<li>ordered, automated rolling updates.</li>
+</ul>
+</li>
+<li>DaemonSet — ensures that all Nodes run a copy of a Pod (logs, monitoring, storage, …)</li>
+<li>Job — you need to run something once</li>
+<li>CronJob — you need to run something periodically</li>
+<li>Garbage Collection — deletes orphan Pods</li>
+</ul>
+<p><a href="https://kubernetes.io/docs/concepts/workloads/pods/">Controllers for workload resource uses PodTemplate from workload object to make actual Pods</a></p>
+<p>— &amp;twocol</p>
+<h2>Service</h2>
+<p>Service is an abstraction defining a logical set of Pods and a policy by which to access them</p>
+<p>The set of Pods targeted by a Service is usually determined by a LabelSelector</p>
+<p>*** =left</p>
+<img width=100% src="module_04_labels.svg"/>
+<p>*** =right</p>
+<pre><code class="language-js">apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: nginx # MyApp 
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: 30180
+      name: http
+    - port: 443
+      nodePort: 31443
+      name: https
+</code></pre>
+<p>*** =fullwidth
+Such schema organically incorporates load balancing functionality</p>
+<p>— .class #id</p>
+<h2>Hands on …</h2>
+<p>Try a service out:</p>
+<pre><code class="language-js">kubectl apply -f https://k8s.io/examples/application/deployment.yaml
+kubectl get deployments
+# edit my-service.yaml to contain a snippet from the previous slide
+kubectl apply -f my-service.yaml
+kubectl get services
+curl $(minikube ip):30180
+</code></pre>
+<p><a href="https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/">Create a stateful mysql DB service</a>:</p>
+<pre><code class="language-js">kubectl apply -f https://k8s.io/examples/application/mysql/mysql-pv.yaml
+kubectl apply -f https://k8s.io/examples/application/mysql/mysql-deployment.yaml
+kubectl describe deployment mysql
+kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+</code></pre>
+<p>— .class #id</p>
+<h2>Summary</h2>
+<br>
+This quick hands-on demonstrates a rather basic part of k8s' functionality
+<p>Spirit of k8s: describe a system and let container-orchestrator prepare and maintain it for you</p>
+<p>Schema is described in YAML (or JSON) and communicated to the k8s’ control plane</p>
+<p>There are lots of details and special cases to cover with a full-blown language (API is enormous)
+For more, consult with enormous and very well done documentation on <a href="http://kubernetes.io/docs/home/">kubernetes.io</a></p>
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>

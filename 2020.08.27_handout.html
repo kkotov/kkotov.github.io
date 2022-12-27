@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Library organization</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/combine/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js,npm/@xiee/utils/js/load-highlight.js" async></script>
+
+
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+
+<h2>Library organization</h2>
+<p>Strong specialization: formatting is delegated to <span style="font-size:100%;color:red">basic_ios</span>, I/O buffers to <span style="font-size:100%;color:red">basic_streambuf</span>:</p>
+<img class=center height=400 src="str_org.png"/>
+<p>Allows simple abstraction of a stream for files, strings, sockets, e.t.c.</p>
+
+
+<h2>State of the stream (not a buffer)</h2>
+<table>
+<thead>
+<tr>
+<th>constant</th>
+<th>meaning</th>
+<th>function</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>goodbit</td>
+<td>none of the other bits is set</td>
+<td>good()</td>
+<td>true if the stream is OK (goodbit is “set”)</td>
+</tr>
+<tr>
+<td>eofbit</td>
+<td>end-of-file was encountered</td>
+<td>eof()</td>
+<td>end-of-file was hit (eofbit is set)</td>
+</tr>
+<tr>
+<td>failbit</td>
+<td>an I/O operation was not successful</td>
+<td>fail()</td>
+<td>error occurred (failbit or <span style="font-size:100%;color:red">badbit</span>(!) is set)</td>
+</tr>
+<tr>
+<td>badbit</td>
+<td>fatal error; undefined state</td>
+<td>bad()</td>
+<td>fatal error (badbit is set)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>rdstate()</td>
+<td>flags currently set</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>clear()</td>
+<td>clears all flags</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>clear(<span style="font-style:italic">state</span>)</td>
+<td>clears all and sets <span style="font-style:italic">state</span> flags</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>setstate(<span style="font-style:italic">state</span>)</td>
+<td>set additional <span style="font-style:italic">state</span> flags</td>
+</tr>
+</tbody>
+</table>
+<p>Note:</p>
+<ul>
+<li><span style="font-size:100%;color:red">failbit</span> — operation was not processed correctly but the stream is OK</li>
+<li><span style="font-size:100%;color:red">badbit</span>  — is set if the stream is somehow corrupted or if data is lost</li>
+</ul>
+<p>E.g., failbit set on formatting error  (“qwe”&gt;&gt;int), but failbit is also always set when eofbit is set!</p>
+
+
+<h2>Member functions for reading</h2>
+<table>
+<thead>
+<tr>
+<th>function</th>
+<th>reads until</th>
+<th># of chars</th>
+<th>terminator</th>
+<th>returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>get(<span style="font-style:italic">s,num</span>)</td>
+<td>excluding newline or end-of-file</td>
+<td>up to <span style="font-style:italic">num</span>-1</td>
+<td>appends</td>
+<td><span style="font-style:italic">istream</span></td>
+</tr>
+<tr>
+<td>get(<span style="font-style:italic">s,num,t</span>)</td>
+<td>excluding <span style="font-style:italic">t</span> or end-of-file</td>
+<td>up to <span style="font-style:italic">num</span>-1</td>
+<td>appends</td>
+<td><span style="font-style:italic">istream</span></td>
+</tr>
+<tr>
+<td>getline(<span style="font-style:italic">s,num</span>)</td>
+<td>including newline or end-of-file</td>
+<td>up to <span style="font-style:italic">num</span>-1</td>
+<td>appends</td>
+<td><span style="font-style:italic">istream</span></td>
+</tr>
+<tr>
+<td>getline(<span style="font-style:italic">s,num,t</span>)</td>
+<td>including <span style="font-style:italic">t</span> or end-of-file</td>
+<td>up to <span style="font-style:italic">num</span>-1</td>
+<td>appends</td>
+<td><span style="font-style:italic">istream</span></td>
+</tr>
+<tr>
+<td>read(<span style="font-style:italic">s,num</span>)</td>
+<td>end-of-file</td>
+<td><span style="font-style:italic">num</span></td>
+<td>no</td>
+<td><span style="font-style:italic">istream</span></td>
+</tr>
+<tr>
+<td>readsome(<span style="font-style:italic">s,num,t</span>)</td>
+<td>end-of-file</td>
+<td>up to <span style="font-style:italic">num</span></td>
+<td>no</td>
+<td><span style="font-style:italic">count</span></td>
+</tr>
+</tbody>
+</table>
+<p><span style="font-weight:bold">get</span> — terminator (’\n’ or <span style="font-style:italic">delim</span>) not read; sequence is terminated by a null character</p>
+<p><span style="font-weight:bold">getline</span> = <span style="font-weight:bold">get</span>, but it <span style="font-style:italic">consumes</span> terminator; it <span style="font-style:italic">does not</span> store it in <span style="font-style:italic">s</span>; <span style="font-size:100%;color:red">failbit</span> is set if no terminator found within <span style="font-style:italic">count</span>-1 characters</p>
+<p><span style="font-weight:bold">read</span> — end-of-file during reading is an error, <span style="font-size:100%;color:red">failbit</span> is set in addition to <span style="font-size:100%;color:red">eofbit</span></p>
+<p><span style="font-weight:bold">readsome</span> — end-of-file is not an error</p>
+
+
+<h2>Move semantics starting from C++11</h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+
+int main() {
+  // write string to a temporarily created file stream (since C++11)
+  std::string s(&quot;hello&quot;);
+  std::ofstream(&quot;fstream2.tmp&quot;) &lt;&lt; s &lt;&lt; std::endl;
+  // write C-string to a temporarily created file stream
+  // - NOTE: wrote a pointer value before C++11
+  std::ofstream(&quot;fstream2.tmp&quot;, std::ios::app) &lt;&lt; &quot;world&quot; &lt;&lt; std::endl;
+}
+</code></pre>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;tuple&gt;
+
+tuple&lt;string,string,string&gt; parseName(string name) {
+       string s1, s2, s3;
+       istringstream(name) &gt;&gt; s1 &gt;&gt; s2 &gt;&gt; s3;
+       if( s3.empty() ) return tuple&lt;string,string,string&gt;(move(s1),&quot;&quot;,move(s2));
+       return tuple&lt;string,string,string&gt;(move(s1),move(s2),move(s3));
+}
+</code></pre>
+
+
+<h2>Redirecting and copying streams</h2>
+<p>Setting underlying buffers with ios::rdbuf you can <a href="https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/browse/sg/LogStream.h?at=refs%2Ftags%2Fv1.15">“silence” stream or [re]direct it to a file</a></p>
+<p>But lifetime of the buffer becomes your responsibility as stream tries to destruct it when it dies:</p>
+<pre><code class="language-cpp">void qwe(){
+  // save output buffer of the stream
+  //   use unique pointer with deleter that ensures to restore
+  //   the original output buffer at the end of the function
+  //   or if an exception is thrown below at any point
+  auto del = [&amp;](streambuf* p) { cout.rdbuf(p); };
+
+  unique_ptr&lt;streambuf,decltype(del)&gt; origBuffer(cout.rdbuf(), del);
+
+  // redirect ouput into the file redirect.txt
+  ofstream file(&quot;redirect.txt&quot;);
+  cout.rdbuf(file.rdbuf());
+
+  // now use this magic
+  file &lt;&lt; &quot;one row for the file&quot; &lt;&lt; endl;
+  cout &lt;&lt; &quot;one row for the stream that also goes to the file &quot; &lt;&lt; endl;
+} // closes file AND its buffer automatically, but cout is kept functional
+</code></pre>
+<!-- https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/commits/34579034afc6e202262ba10142f3872b72bb2a41 -->
+
+
+<h2>i18n</h2>
+<p>Date format, currency, special symbols, alphabet ordering, … all is managed with locale facets</p>
+<p>Locate format (X/Open) from LANG environment var: <span style="color:black"><span style="font-style:italic">language</span>[_<span style="font-style:italic">area</span>[.<span style="font-style:italic">code</span>]][@<span style="font-style:italic">modifier</span>]</span></p>
+<p>Example: <span style="color:black">“C”</span> (English, 7 bit), <span style="color:black">“en_US”</span>, <span style="color:black">“de_AT.utf8”</span>, <span style="color:black">“fr_CH”</span>, <span style="color:black">“zh_CN”</span>, <span style="color:black">“POSIX”</span> (alias for <span style="color:black">“C”</span>?)</p>
+<pre><code class="language-cpp">std::locale langLocale(&quot;&quot;); // empty string argument: determine locale by the environment variable LANG
+
+std::cout.imbue(std::locale(&quot;C&quot;)); // identical to std::cout.imbue(std::locale::classic());
+
+std::locale::global(std::locale(&quot;&quot;)); // sets default locale for all streams (yet to be created) to be based on LANG environment
+</code></pre>
+<p>All of the specific properties of locale are handled with corresponding <span style="font-style:italic">facets</span></p>
+<p>Every facet impements its own interface, so accessing facet stored in locate relies on its type:</p>
+<pre><code class="language-cpp">locale en_US(&quot;en_US&quot;);
+cout.imbue(en_US); // ensure that the money_put&lt;&gt; facet impacts the output
+cout &lt;&lt; showbase;  // ... and currency is written
+const money_put&lt;char&gt;&amp; mpG = use_facet&lt; money_put&lt;char&gt; &gt;(en_US); // call has_facet to check if it is there; another example is time_put facet
+mpG.put (cout, false, cout, ' ', 12345.678); // prints: &quot;$123.46&quot;; the same could be achieved with put_money manipulator hiding facet inside
+</code></pre>
+
+
+<h2>ctype&lt;&gt; facet</h2>
+<ol>
+<li>converts char ↔ charT;   2) classifies whitespace, new line, …;   3) uppercase ↔ lowercase</li>
+</ol>
+<pre><code class="language-cpp">// convert string to wstring
+std::wstring to_wstring(const std::string&amp; str, const std::locale&amp; loc = std::locale())
+{
+   std::vector&lt;wchar_t&gt; buf(str.size());
+   std::use_facet&lt;std::ctype&lt;wchar_t&gt;&gt;(loc).widen(str.data(), str.data()+str.size(), buf.data());
+   return std::wstring(buf.data(), buf.size());
+}
+// convert wstring to string with '?' as default character
+std::string to_string(const std::wstring&amp; str, const std::locale&amp; loc = std::locale())
+{
+   std::vector&lt;char&gt; buf(str.size());
+   std::use_facet&lt;std::ctype&lt;wchar_t&gt;&gt;(loc).narrow(str.data(), str.data()+str.size(), '?', buf.data());
+      return std::string(buf.data(), buf.size());
+}
+
+std::wcout &lt;&lt; to_wstring(&quot;QWE EWQ&quot;) &lt;&lt; std::endl;
+std::wcout &lt;&lt; to_string(to_wstring(&quot;QWE EWQ&quot;)) &lt;&lt; std::endl;
+</code></pre>
+<p>Same construct can be used for changing the case with toupper and tolower members,    
+but there are global convenience functions for that: <span style="color:black">std::islower(c,loc); std::toupper(c,loc);</span> …</p>
+
+
+<h2>Wrapping it up</h2>
+<p>Things I did not cover:</p>
+<ul>
+<li>Use cases in our code base (e.g. <a href="https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/browse/sg/formatted_input/FormattedInput.h#335-352">using comma as separotor</a>)</li>
+<li>Stream manipulators (especially ws and homebrewed <a href="https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/browse/sg/formatted_input/FormattedInput.h#77-99">wsnoendl</a>)</li>
+<li>Multibyte and wide-character representations for the encoding (e.g. difference between UCS-2 and UTF-8)</li>
+<li>Character encoding conversions (codecvt_utf16, codecvt_utf8_utf16, wstring_convert, …)</li>
+<li>User-defined stream buffers</li>
+<li>Loose stream coupling using tie()</li>
+</ul>
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>

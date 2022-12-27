@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Numeric and symbolic calculations</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/combine/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js,npm/@xiee/utils/js/load-highlight.js" async></script>
+
+<!-- MathJax scripts -->
+<script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML" async>
+</script>
+
+<style type="text/css">
+body, td {
+  font-family: sans-serif;
+  background-color: white;
+  font-size: 13px;
+}
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+}
+tt, code, pre {
+  font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+a:visited { color: #80007f; }
+pre, img { max-width: 100%; }
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+code[class] { background-color: #F8F8F8; }
+code.language-undefined { background-color: inherit; }
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color:#666;
+  margin:0;
+  padding-left: 1em;
+  border-left: 0.5em #eee solid;
+}
+hr { border: 1px #ddd dashed; }
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+  }
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  a, a:visited { text-decoration: underline; }
+  hr {
+    visibility: hidden;
+    page-break-before: always;
+  }
+  pre, blockquote {
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr />
+<p>title       : “Some elements of functional programming”
+subtitle    :
+author      :
+job         :
+framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      #
+url:
+lib:    ../libraries
+assets: ../assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides</p>
+<p>— &amp;twocol</p>
+<h2>Numeric and symbolic calculations</h2>
+<br>
+<p>Example two ways to calculate an integral:</p>
+<p>*** =left</p>
+<p>$$
+\int_{a}^{b} x^2 ,dx = \sum_{i=0}^{N} x_i^2 \Delta x
+$$</p>
+<p>where \(\Delta x = (b-a)/N\) and \(x_i = a + i \cdot \Delta x\)</p>
+<p>*** =right
+$$
+\int_{a}^{b} x^2 ,dx = \frac{1}{3} (b^3 - a^3)
+$$
+*** =fullwidth</p>
+<br>
+<p>Abstraction, achieved with substitutions by some algebraic rules, saves great deal of an effort</p>
+<br>
+<p>Similar concepts exist in programming: imperative programming and functional programming</p>
+<p>— .class #id</p>
+<h2>Imperative programming:</h2>
+<br>
+<br>
+<ul>
+<li>modifying mutable variables</li>
+<li>using assignments</li>
+<li>control structures: if-else, loops, break/continue/return</li>
+</ul>
+<p>It “… conceptualizes data structures word-by-word” i.e. object = its representation in memory</p>
+<p>— .class #id</p>
+<h2>Another paradigm:</h2>
+<p>Algebra (<span style="font-weight:bold; color:red">elements</span> and <span style="font-weight:bold; color:red">operators</span> transforming these elements to … <span style="font-style:italic">elements</span>) allows to reason about higher-level abstractions like polynomials, collections, shapes, strings …, e.g.:</p>
+<p>$$
+(a\cdot x + b)  + (c\cdot x + d) = (a+c)\cdot x + (b+d)
+$$</p>
+<p>$$
+(string_1 + string_2) + string_3 = string_1 + (string_2 + string_3)
+$$</p>
+<p>Functional programming:</p>
+<ul>
+<li>without mutable variable</li>
+<li>without assignments</li>
+<li>without loops and other imperative control structures</li>
+</ul>
+<p>Achieved with algebra of functions: functions take functions as arguments and return functions</p>
+<p>— .class #id</p>
+<h2>Evaluation = chain of substitutions (Scala syntax)</h2>
+<p><span style="font-style:italic">Substitution model</span> reduces expression to a value without side effects (e.g. c++ has side effect):</p>
+<pre><code class="language-scala">def square(x: Double) = x * x
+def sumOfSquares(x: Double, y: Double): Int = square(x) + square(y)
+
+sumOfSquares(3, 2+2) -&gt; sumOfSquares(3, 4) -&gt; square(3) + square(4) -&gt; 3*3 + square(4) -&gt; 9 + square(4) -&gt; 9 + 4*4 -&gt; 9 + 16 -&gt; 25 
+</code></pre>
+<p>Call-by-value (above) vs. call-by-name (below) evaluations:</p>
+<pre><code class="language-scala">def sumOfSquares(x: Double, y: =&gt; Double): Int = square(x) + square(y)
+
+sumOfSquares(3, 2+2) -&gt; sumOfSquares(3, 2+2) -&gt; square(3) + square(2+2) -&gt; 3*3 + square(2+2) -&gt; 9 + square(2+2) -&gt; 9 + (2+2)*(2+2) -&gt; 9 + 4*(2+2) -&gt; 9 + 4*4 -&gt; 9 + 16 -&gt; 25 
+</code></pre>
+<pre><code class="language-scala">def loop: Int = loop
+loop -&gt; loop -&gt; ...
+
+def test(x: Int, y: =&gt; Int) = x
+
+test(1,loop) -&gt; 1 # i.e. it actually terminates
+</code></pre>
+<p>— .class #id</p>
+<h2>Syntactic beauty of functions</h2>
+<p>Take sums between <span style="font-style:italic">a</span> and <span style="font-style:italic">b</span>, \(\sum_{n=a}^{b}f(n)\) and simplify it step by step:</p>
+<pre><code class="language-scala">def sumInts(a: Int, b: Int): Int = if (a &gt; b) 0 else a + sumInts(a + 1, b)
+
+def cube(x: Int): Int = x * x * x
+def sumCubes(a: Int, b: Int): Int = if (a &gt; b) 0 else cube(a) + sumCubes(a + 1, b)
+
+def factorial(x: Int): Int = if (x == 0) 1 else x * factorial(x - 1)
+def sumFactorials(a: Int, b: Int): Int = if (a &gt; b) 0 else factorial(a) + sumFactorials(a + 1, b)
+</code></pre>
+<pre><code class="language-scala">def sum(f: Int =&gt; Int, a: Int, b: Int): Int = if (a &gt; b) 0 else f(a) + sum(f, a + 1, b)
+
+def sumInts = sum(x =&gt; x, a, b)
+def sumCubes = sum(x =&gt; x * x * x, a, b)
+</code></pre>
+<pre><code class="language-scala">def sum(f: Int =&gt; Int): (Int, Int) =&gt; Int = { 
+    def sumFunc(a: Int, b: Int): Int =
+        if (a &gt; b) 0
+        else f(a) + sumFunc(a + 1, b)
+    sumFunc
+}
+sum(x =&gt; x)(1,10) + sum(x =&gt; x * x * x)(1,10) + sum(factorial)(1,10)
+</code></pre>
+<p>— &amp;twocol</p>
+<h2>Immutability of data, is it possible? (BST example)</h2>
+<p>*** =left</p>
+<pre><code class="language-scala">abstract class BST {
+  def contains(x: Int): Boolean
+  def include(x: Int): BST
+}
+
+class Empty extends BST {
+  def contains(x: Int): Boolean = false
+  def include(x: Int): BST = new NonEmpty(x, new Empty, new Empty)
+}
+
+class NonEmpty(value: Int, left: BST, right: BST) extends BST {
+
+  def contains(x: Int): Boolean =
+    if (x &lt; value) left.contains(x)
+    else if (x &gt; value) right.contains(x)
+    else true
+
+  def include(x: Int): BST =
+    if (x &lt; value) new NonEmpty(value, left.include(x), right)
+    else if (x &gt; value) new NonEmpty(value, left, right.include(x))
+    else this
+}
+</code></pre>
+<p>*** =right</p>
+<img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iCiJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8IS0tIENyZWF0b3I6IGZpZzJkZXYgVmVyc2lvbiAzLjIgUGF0Y2hsZXZlbCA1ZSAtLT4KPCEtLSBDcmVhdGlvbkRhdGU6IFdlZCBOb3YgMTggMTg6MDM6MzQgMjAyMCAtLT4KPCEtLSBNYWduaWZpY2F0aW9uOiAxLjA1MCAtLT4KPHN2Zwl4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCgl4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIKCXdpZHRoPSI0LjFpbiIgaGVpZ2h0PSIzLjJpbiIKCXZpZXdCb3g9Ii0xNSA0NDkgNDk0NiAzODY1Ij4KPGcgc3R5bGU9InN0cm9rZS13aWR0aDouMDI1aW47IGZpbGw6bm9uZSI+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIxNDE3IiB5PSI0NzIiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMTExMSwyMTg3CjE1MTMsMjc5MQoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDExMTEgMjE4NyAtIDE2MDEgMjkyMS0tPgo8cG9seWdvbiBwb2ludHM9IjE1MDggMjgzOAoxNTg3IDI5MDAKMTU2MSAyODA0CjE1MTcgMjc5NQoxNTA4IDI4MzgKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iNjk4LDIxNjUKMjk1LDI3NjkKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCA2OTggMjE2NSAtIDIwNyAyODk5LS0+Cjxwb2x5Z29uIHBvaW50cz0iMjY5IDI3NDgKMjI2IDI4NzEKMzIyIDI3ODMKMjY5IDI3NDgKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMjUyOSwzMzY5CjI5MzEsMzk3MgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDI1MjkgMzM2OSAtIDMwMTggNDEwMi0tPgo8cG9seWdvbiBwb2ludHM9IjI5MjUgNDAxOQozMDA0IDQwODEKMjk3OCAzOTg1CjI5MzQgMzk3NgoyOTI1IDQwMTkKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMjExNSwzMzQ2CjE3MTIsMzk1MAoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDIxMTUgMzM0NiAtIDE2MjUgNDA4MC0tPgo8cG9seWdvbiBwb2ludHM9IjE2ODcgMzkyOQoxNjQ0IDQwNTIKMTczOSAzOTY0CjE2ODcgMzkyOQoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSI0MzI0LDMzNjkKNDcyNiwzOTcyCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgNDMyNCAzMzY5IC0gNDgxMyA0MTAyLS0+Cjxwb2x5Z29uIHBvaW50cz0iNDcyMSA0MDE5CjQ4MDAgNDA4MQo0NzczIDM5ODUKNDcyOSAzOTc2CjQ3MjEgNDAxOQoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIzOTEwLDMzNDYKMzUwNywzOTUwCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgMzkxMCAzMzQ2IC0gMzQyMCA0MDgwLS0+Cjxwb2x5Z29uIHBvaW50cz0iMzQ4MiAzOTI5CjM0MzkgNDA1MgozNTM0IDM5NjQKMzQ4MiAzOTI5CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjE2NTMsOTQ0CjEyNTAsMTU0OAoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDE2NTMgOTQ0IC0gMTE2MyAxNjc4LS0+Cjxwb2x5Z29uIHBvaW50cz0iMTIyNSAxNTI3CjExODIgMTY1MAoxMjc3IDE1NjIKMTIyNSAxNTI3CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjIxMjUsOTQ0CjI1MjgsMTU0OAoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDIxMjUgOTQ0IC0gMjYxNSAxNjc4LS0+Cjxwb2x5Z29uIHBvaW50cz0iMjUyMiAxNTk1CjI2MDEgMTY1NwoyNTc1IDE1NjEKMjUzMSAxNTUyCjI1MjIgMTU5NQoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIzMDk2LDIxODcKMzQ5OCwyNzkxCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgMzA5NiAyMTg3IC0gMzU4NSAyOTIxLS0+Cjxwb2x5Z29uIHBvaW50cz0iMzQ5MiAyODM4CjM1NzEgMjkwMAozNTQ1IDI4MDQKMzUwMSAyNzk1CjM0OTIgMjgzOAoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIyNjgyLDIxNjUKMjI3OSwyNzY5CiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgMjY4MiAyMTY1IC0gMjE5MiAyODk5LS0+Cjxwb2x5Z29uIHBvaW50cz0iMjI1NCAyNzQ4CjIyMTEgMjg3MQoyMzA2IDI3ODMKMjI1NCAyNzQ4CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmU6IGJveCAtLT4KPHJlY3QgeD0iMTk4NCIgeT0iMjg4MSIgd2lkdGg9Ijk0NCIgaGVpZ2h0PSI0NzIiIHJ4PSIwIiAKc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBMaW5lOiBib3ggLS0+CjxyZWN0IHg9IjM0NDgiIHk9IjI4ODEiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSI0NzIiIHk9IjE3MDAiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIyNDA5IiB5PSIxNzAwIiB3aWR0aD0iOTQ0IiBoZWlnaHQ9IjQ3MiIgcng9IjAiIApzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjE3OTUiIHk9Ijg1MCIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij43PC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjAiIHk9IjMxMTgiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+RTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIxNjA2IiB5PSIzMTE4IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iMTQxNyIgeT0iNDI5OSIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5FPC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjMwMjMiIHk9IjQyOTkiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+RTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIzMjEyIiB5PSI0Mjk5IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iNDgxOCIgeT0iNDI5OSIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5FPC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjM4MjYiIHk9IjMyNTkiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+MTM8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iODUwIiB5PSIyMDc4IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iMjc4NyIgeT0iMjA3OCIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij4xMTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIyMzYyIiB5PSIzMjU5IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjk8L3RleHQ+CjwvZz4KPC9zdmc+Cg==" class=center width=200>
+<p>Insert node with value=3:</p>
+<img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iCiJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8IS0tIENyZWF0b3I6IGZpZzJkZXYgVmVyc2lvbiAzLjIgUGF0Y2hsZXZlbCA1ZSAtLT4KPCEtLSBDcmVhdGlvbkRhdGU6IFdlZCBOb3YgMTggMTg6NDA6MjIgMjAyMCAtLT4KPCEtLSBNYWduaWZpY2F0aW9uOiAxLjA1MCAtLT4KPHN2Zwl4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCgl4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIKCXdpZHRoPSI1LjNpbiIgaGVpZ2h0PSI0LjhpbiIKCXZpZXdCb3g9Ii0xNSAyNjAgNjM2NCA1ODAyIj4KPGcgc3R5bGU9InN0cm9rZS13aWR0aDouMDI1aW47IGZpbGw6bm9uZSI+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIzODI2IiB5PSIzNDQ4IiB3aWR0aD0iOTQ0IiBoZWlnaHQ9IjQ3MiIgcng9IjAiIApzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIExpbmU6IGJveCAtLT4KPHJlY3QgeD0iNDg2NiIgeT0iNDYyOSIgd2lkdGg9Ijk0NCIgaGVpZ2h0PSI0NzIiIHJ4PSIwIiAKc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBMaW5lOiBib3ggLS0+CjxyZWN0IHg9IjM0MDEiIHk9IjQ2MjkiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMzk0Niw1MTE3CjQzNDgsNTcyMAoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDM5NDYgNTExNyAtIDQ0MzUgNTg1MC0tPgo8cG9seWdvbiBwb2ludHM9IjQzNDMgNTc2Nwo0NDIyIDU4MjkKNDM5NSA1NzMzCjQzNTEgNTcyNAo0MzQzIDU3NjcKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMzUzMiw1MDk1CjMxMjksNTY5OAoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDM1MzIgNTA5NSAtIDMwNDIgNTgyOC0tPgo8cG9seWdvbiBwb2ludHM9IjMxMDQgNTY3NwozMDYxIDU4MDAKMzE1NiA1NzEyCjMxMDQgNTY3NwoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSI1NzQxLDUxMTcKNjE0Myw1NzIwCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgNTc0MSA1MTE3IC0gNjIzMCA1ODUwLS0+Cjxwb2x5Z29uIHBvaW50cz0iNjEzOCA1NzY3CjYyMTcgNTgyOQo2MTkxIDU3MzMKNjE0NiA1NzI0CjYxMzggNTc2NwoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSI1MzI4LDUwOTUKNDkyNCw1Njk4CiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgNTMyOCA1MDk1IC0gNDgzNyA1ODI4LS0+Cjxwb2x5Z29uIHBvaW50cz0iNDg5OSA1Njc3CjQ4NTYgNTgwMAo0OTUyIDU3MTIKNDg5OSA1Njc3CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjQwOTksMzkxMwozNjk2LDQ1MTcKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCA0MDk5IDM5MTMgLSAzNjA5IDQ2NDctLT4KPHBvbHlnb24gcG9pbnRzPSIzNjcxIDQ0OTYKMzYyOCA0NjE5CjM3MjMgNDUzMQozNjcxIDQ0OTYKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iNDUxMywzOTM1CjQ5MTUsNDUzOQoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDQ1MTMgMzkzNSAtIDUwMDIgNDY2OS0tPgo8cG9seWdvbiBwb2ludHM9IjQ5MTAgNDU4Ngo0OTg4IDQ2NDgKNDk2MiA0NTUyCjQ5MTggNDU0Mwo0OTEwIDQ1ODYKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSI5NDQiIHk9IjE1MTEiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIxODg5IiB5PSIyODMiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMjUyOSwzOTM1CjI5MzEsNDUzOQoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDI1MjkgMzkzNSAtIDMwMTggNDY2OS0tPgo8cG9seWdvbiBwb2ludHM9IjI5MjUgNDU4NgozMDA0IDQ2NDgKMjk3OCA0NTUyCjI5MzQgNDU0MwoyOTI1IDQ1ODYKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMjExNSwzOTEzCjE3MTIsNDUxNwoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDIxMTUgMzkxMyAtIDE2MjUgNDY0Ny0tPgo8cG9seWdvbiBwb2ludHM9IjE2ODcgNDQ5NgoxNjQ0IDQ2MTkKMTczOSA0NTMxCjE2ODcgNDQ5NgoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lOiBib3ggLS0+CjxyZWN0IHg9IjE4ODkiIHk9IjM0NDgiIHdpZHRoPSI5NDQiIGhlaWdodD0iNDcyIiByeD0iMCIgCnN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIyODM0IiB5PSIyMjIwIiB3aWR0aD0iOTQ0IiBoZWlnaHQ9IjQ3MiIgcng9IjAiIApzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjMwNzAsMjY5MgoyNjY3LDMyOTYKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCAzMDcwIDI2OTIgLSAyNTgwIDM0MjYtLT4KPHBvbHlnb24gcG9pbnRzPSIyNjQyIDMyNzUKMjU5OSAzMzk4CjI2OTUgMzMxMAoyNjQyIDMyNzUKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMzU0MywyNjkyCjM5NDUsMzI5NgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDM1NDMgMjY5MiAtIDQwMzIgMzQyNi0tPgo8cG9seWdvbiBwb2ludHM9IjM5NDAgMzM0Mwo0MDE4IDM0MDUKMzk5MiAzMzA5CjM5NDggMzMwMAozOTQwIDMzNDMKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMTExMSwzMTgwCjE1MTMsMzc4MwoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDExMTEgMzE4MCAtIDE2MDEgMzkxMy0tPgo8cG9seWdvbiBwb2ludHM9IjE1MDggMzgzMAoxNTg3IDM4OTIKMTU2MSAzNzk2CjE1MTcgMzc4NwoxNTA4IDM4MzAKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iNjk4LDMxNTgKMjk1LDM3NjEKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCA2OTggMzE1OCAtIDIwNyAzODkxLS0+Cjxwb2x5Z29uIHBvaW50cz0iMjY5IDM3NDAKMjI2IDM4NjMKMzIyIDM3NzUKMjY5IDM3NDAKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMTU4NCwxOTk4CjE5ODYsMjYwMgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjptaXRlcjsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDE1ODQgMTk5OCAtIDIwNzMgMjczMi0tPgo8cG9seWdvbiBwb2ludHM9IjE5ODEgMjY0OQoyMDU5IDI3MTEKMjAzMyAyNjE1CjE5ODkgMjYwNgoxOTgxIDI2NDkKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMTE3MCwxOTc2Cjc2NywyNTgwCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgMTE3MCAxOTc2IC0gNjgwIDI3MTAtLT4KPHBvbHlnb24gcG9pbnRzPSI3NDIgMjU1OQo2OTkgMjY4Mgo3OTQgMjU5NAo3NDIgMjU1OQoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lOiBib3ggLS0+CjxyZWN0IHg9IjI4MyIgeT0iMjY5MiIgd2lkdGg9Ijk0NCIgaGVpZ2h0PSI0NzIiIHJ4PSIwIiAKc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIyMTI1LDc1NQoxNzIyLDEzNTkKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCAyMTI1IDc1NSAtIDE2MzUgMTQ4OS0tPgo8cG9seWdvbiBwb2ludHM9IjE2OTcgMTMzOAoxNjU0IDE0NjEKMTc1MCAxMzczCjE2OTcgMTMzOAoKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2O3N0cm9rZS1taXRlcmxpbWl0Ojg7CmZpbGw6IzAwMDAwMDsiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIyNTk4LDc1NQoyNjAwLDc1NgoyNjAzLDc1OQoyNjA5LDc2MwoyNjIxLDc2OQoyNjM2LDc3OQoyNjU2LDc5MQoyNjgyLDgwNwoyNzEyLDgyNgoyNzQ4LDg0OQoyNzg5LDg3NAoyODM0LDkwMgoyODgyLDkzNAoyOTM1LDk2NwoyOTkwLDEwMDIKMzA0NSwxMDM5CjMxMDIsMTA3NgozMTU5LDExMTQKMzIxNSwxMTUyCjMyNzEsMTE5MAozMzI1LDEyMjgKMzM3OCwxMjY2CjM0MjksMTMwMQozNDc4LDEzMzcKMzUyNCwxMzczCjM1NjgsMTQwNgozNjEwLDE0NDAKMzY0OSwxNDcyCjM2ODcsMTUwNAozNzIxLDE1MzQKMzc1NCwxNTY1CjM3ODUsMTU5NQozODE1LDE2MjUKMzg0MiwxNjU1CjM4NjcsMTY4NQozODkxLDE3MTQKMzkxNCwxNzQzCjM5MzcsMTc3NAozOTU2LDE4MDMKMzk3NiwxODM1CjM5OTUsMTg2Nwo0MDE0LDE5MDAKNDAzMSwxOTM0CjQwNDgsMTk2OQo0MDYyLDIwMDYKNDA3NywyMDQzCjQwOTEsMjA4MQo0MTAzLDIxMjIKNDExNiwyMTY0CjQxMjcsMjIwOAo0MTM4LDIyNTUKNDE0OCwyMzA0CjQxNTcsMjM1NAo0MTY2LDI0MDgKNDE3NSwyNDY0CjQxODMsMjUyMgo0MTkxLDI1ODMKNDE5NywyNjQ1CjQyMDQsMjcwOQo0MjExLDI3NzUKNDIxNiwyODQxCjQyMjEsMjkwOAo0MjI2LDI5NzQKNDIzMCwzMDM4CjQyMzUsMzEwMAo0MjM4LDMxNTkKNDI0MSwzMjEzCjQyNDMsMzI2Mgo0MjQ1LDMzMDcKNDI0NywzMzQ0CjQyNDgsMzM3Ngo0MjQ5LDM0MDEKNDI1MCwzNDIwCjQyNDcsMzMyMgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7CnN0cm9rZS1saW5lam9pbjpiZXZlbDsgc3Ryb2tlLWxpbmVjYXA6YnV0dDsKIi8+CjwhLS0gQXJyb3doZWFkIG9uIFhYWHBvaW50IDQyNTAgMzQyMCAtIDQyNTMgMzQ3OS0tPgo8cG9seWdvbiBwb2ludHM9IjQyMTYgMzM2MAo0MjUxIDM0NTQKNDI3OSAzMzU3CjQyNDYgMzMyOAo0MjE2IDMzNjAKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iNDIwNCIgeT0iMzgyNiIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij4xMTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSI1MjQ0IiB5PSI1MDA3IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjEzPC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjM3NzkiIHk9IjUwMDciIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+OTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIyODM0IiB5PSI2MDQ3IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iNDQ0MCIgeT0iNjA0NyIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5FPC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjQ2MjkiIHk9IjYwNDciIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+RTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSI2MjM2IiB5PSI2MDQ3IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iMTMyMiIgeT0iMTg4OSIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij41PC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjIyNjciIHk9IjY2MSIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij43PC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjE0MTciIHk9IjQ4NjYiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+RTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIzMDIzIiB5PSI0ODY2IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iMjI2NyIgeT0iMzgyNiIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij41PC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjMyMTIiIHk9IjI1OTgiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+NzwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIwIiB5PSI0MTEwIiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkU8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iMTYwNiIgeT0iNDExMCIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5FPC90ZXh0Pgo8IS0tIFRleHQgLS0+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHg9IjIwNzgiIHk9IjI5MjkiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+RTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSI2NjEiIHk9IjMwNzAiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+MzwvdGV4dD4KPC9nPgo8L3N2Zz4K" class=center width=250>
+<p>*** =fullwidth</p>
+<center>
+Original nodes 5 and 7 stay there unchanged (and ... unused)
+</center>
+<p>— &amp;twocol</p>
+<h2>How to loop?</h2>
+<p>*** =left</p>
+<pre><code class="language-scala">trait List[T] {
+  def isEmpty: Boolean
+  def head: T
+  def tail: List[T]
+}
+
+class Cons[T](val head: T, val tail: List[T]) extends List[T] {
+  def isEmpty = false
+}
+
+class Nil[T] extends List[T] {
+  def isEmpty = true
+  def head: Nothing = throw new NoSuchElement(&quot;Nil.head&quot;)
+  def tail: Nothing = throw new NoSuchElement(&quot;Nil.head&quot;)
+}
+
+val list = new Cons(1, new Cons(2, new Cons(3, new Nil)))
+
+// return Nth element of the list:
+def nth[T](n: Int, xs: List[T]): T =
+  if (xs.isEmpty) throw new IndexOutOfBounds
+  if (n == 0) xs.head
+  else nth(n - 1, xs.tail)
+</code></pre>
+<p>*** =right</p>
+<p><br><br><br>
+<img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iCiJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8IS0tIENyZWF0b3I6IGZpZzJkZXYgVmVyc2lvbiAzLjIgUGF0Y2hsZXZlbCA1ZSAtLT4KPCEtLSBDcmVhdGlvbkRhdGU6IFdlZCBOb3YgMTggMjA6MzU6MjkgMjAyMCAtLT4KPCEtLSBNYWduaWZpY2F0aW9uOiAxLjA1MCAtLT4KPHN2Zwl4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCgl4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIKCXdpZHRoPSIzLjJpbiIgaGVpZ2h0PSIzLjNpbiIKCXZpZXdCb3g9IjgzNCA0NDkgMzc5NiAzOTYwIj4KPGcgc3R5bGU9InN0cm9rZS13aWR0aDouMDI1aW47IGZpbGw6bm9uZSI+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMTY1Myw5NDQKMTI1MCwxNTQ4CiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgMTY1MyA5NDQgLSAxMTYzIDE2NzgtLT4KPHBvbHlnb24gcG9pbnRzPSIxMjI1IDE1MjcKMTE4MiAxNjUwCjEyNzcgMTU2MgoxMjI1IDE1MjcKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZSAtLT4KPHBvbHlsaW5lIHBvaW50cz0iMjEyNSw5NDQKMjUyOCwxNTQ4CiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBBcnJvd2hlYWQgb24gWFhYcG9pbnQgMjEyNSA5NDQgLSAyNjE1IDE2NzgtLT4KPHBvbHlnb24gcG9pbnRzPSIyNTIyIDE1OTUKMjYwMSAxNjU3CjI1NzUgMTU2MQoyNTMxIDE1NTIKMjUyMiAxNTk1CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjMwOTYsMjE4NwozNDk4LDI3OTEKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCAzMDk2IDIxODcgLSAzNTg1IDI5MjEtLT4KPHBvbHlnb24gcG9pbnRzPSIzNDkyIDI4MzgKMzU3MSAyOTAwCjM1NDUgMjgwNAozNTAxIDI3OTUKMzQ5MiAyODM4CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjI2ODIsMjE2NQoyMjc5LDI3NjkKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCAyNjgyIDIxNjUgLSAyMTkyIDI4OTktLT4KPHBvbHlnb24gcG9pbnRzPSIyMjU0IDI3NDgKMjIxMSAyODcxCjIzMDYgMjc4MwoyMjU0IDI3NDgKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIyNDA5IiB5PSIxNzAwIiB3aWR0aD0iOTQ0IiBoZWlnaHQ9IjQ3MiIgcng9IjAiIApzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIExpbmU6IGJveCAtLT4KPHJlY3QgeD0iMTQxNyIgeT0iNDcyIiB3aWR0aD0iOTQ0IiBoZWlnaHQ9IjQ3MiIgcng9IjAiIApzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjQxMzUsMzM2OQo0NTM3LDM5NzIKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCA0MTM1IDMzNjkgLSA0NjI0IDQxMDItLT4KPHBvbHlnb24gcG9pbnRzPSI0NTMyIDQwMTkKNDYxMSA0MDgxCjQ1ODQgMzk4NQo0NTQwIDM5NzYKNDUzMiA0MDE5CgoiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTY7c3Ryb2tlLW1pdGVybGltaXQ6ODsKZmlsbDojMDAwMDAwOyIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjM3MjEsMzM0NgozMzE4LDM5NTAKIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIEFycm93aGVhZCBvbiBYWFhwb2ludCAzNzIxIDMzNDYgLSAzMjMxIDQwODAtLT4KPHBvbHlnb24gcG9pbnRzPSIzMjkzIDM5MjkKMzI1MCA0MDUyCjMzNDUgMzk2NAozMjkzIDM5MjkKCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjtzdHJva2UtbWl0ZXJsaW1pdDo4OwpmaWxsOiMwMDAwMDA7Ii8+CjwhLS0gTGluZTogYm94IC0tPgo8cmVjdCB4PSIzNDQ4IiB5PSIyODgxIiB3aWR0aD0iOTQ0IiBoZWlnaHQ9IjQ3MiIgcng9IjAiIApzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE2OwpzdHJva2UtbGluZWpvaW46bWl0ZXI7IHN0cm9rZS1saW5lY2FwOmJ1dHQ7CiIvPgo8IS0tIExpbmUgLS0+Cjxwb2x5bGluZSBwb2ludHM9IjE4ODksNDcyCjE4ODksOTQ0CiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIzOTIxLDI4ODEKMzkyMSwzMzU0CiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBMaW5lIC0tPgo8cG9seWxpbmUgcG9pbnRzPSIyODgxLDE3MDAKMjg4MSwyMTczCiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxNjsKc3Ryb2tlLWxpbmVqb2luOm1pdGVyOyBzdHJva2UtbGluZWNhcDpidXR0OwoiLz4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSI4NTAiIHk9IjIwNzgiIGZpbGw9IiMwMDAwMDAiICBmb250LWZhbWlseT0iVGltZXMiIGZvbnQtc3R5bGU9Im5vcm1hbCIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgZm9udC1zaXplPSIzMDMiIHRleHQtYW5jaG9yPSJzdGFydCI+NTwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSIxODQyIiB5PSIzMjU5IiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjk8L3RleHQ+CjwhLS0gVGV4dCAtLT4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeD0iMjg4MSIgeT0iNDM5MyIgZmlsbD0iIzAwMDAwMCIgIGZvbnQtZmFtaWx5PSJUaW1lcyIgZm9udC1zdHlsZT0ibm9ybWFsIiBmb250LXdlaWdodD0ibm9ybWFsIiBmb250LXNpemU9IjMwMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij4xMzwvdGV4dD4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB4PSI0Mjk5IiB5PSI0MzkzIiBmaWxsPSIjMDAwMDAwIiAgZm9udC1mYW1pbHk9IlRpbWVzIiBmb250LXN0eWxlPSJub3JtYWwiIGZvbnQtd2VpZ2h0PSJub3JtYWwiIGZvbnQtc2l6ZT0iMzAzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPk5pbDwvdGV4dD4KPC9nPgo8L3N2Zz4K" class=center width=250></p>
+<p>*** =fullwidth</p>
+<p>Remember looping over variadic templates in C++? &lt;…&gt; = tail and end of loop = specialized type</p>
+<p>— &amp;twocol</p>
+<h2>More Scala/C++ similarities: pattern matching</h2>
+<p>*** =left</p>
+<pre><code class="language-scala">trait Expr { ... }
+class Number(n: Int) extends Expr { ... }
+class Sum(l: Expr, r: Expr) extends Expr { ... }
+
+def show(e: Expr): String = e match {
+  case Number(n) =&gt; n.toString
+  case Sum(l, r) =&gt; show(l) + &quot; + &quot; + show(r)
+}
+</code></pre>
+<p>*** =right</p>
+<pre><code class="language-cpp">template&lt;typename T&gt;
+std::string show(const T&amp; val)
+{
+  return show_impl(val, std::is_pointer&lt;T&gt;());
+}
+
+template&lt;typename T&gt;
+std::string show_impl(const T&amp; val, std::false_type)
+{
+  return (stringstream() &lt;&lt; val).str();
+}
+
+template&lt;typename T&gt;
+std::string show_impl(const T&amp; val, std::true_type)
+{
+  return (stringstream() &lt;&lt; *val).str();
+}
+
+template&lt;&gt;
+std::string show(const SumType&amp; val)
+{
+  return show(val.left) + &quot; + &quot; + show(val.right);
+}
+</code></pre>
+<p>*** =fullwidth</p>
+<p>— .class #id</p>
+<h2>Applications</h2>
+<ul>
+<li>
+<p>Functional programming focuses on “instructions” to be performed on data rather than on data themselves.
+It makes it ideal instrument for horizontally scalable applications (e.g. MapReduce) where you distribute
+“instructions” over agents and let them work in parallel.</p>
+</li>
+<li>
+<p>Scala is the workhorse of Spark</p>
+</li>
+<li>
+<p>Many languages offer support for functional programming (while not being “pure” functional languages).
+For example, Python offers functional semantics and that also allows it to be used with Spark (PySpark project).</p>
+</li>
+<li>
+<p>Some parts of Scala’s syntax happened to be adopted in other languages (e.g. Golang)</p>
+</li>
+<li>
+<p>We already use C++ template metaprogramming in our code base</p>
+</li>
+</ul>
+<br>
+<center>
+Want to learn more? Look at [Scala Specialization](https://www.coursera.org/learn/progfun1) from its creator in EPFL.
+</center>
+
+
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
+</body>
+
+</html>
