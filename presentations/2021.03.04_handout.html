@@ -75,6 +75,24 @@ hr { border: 1px #ddd dashed; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+.twocol .left {
+  float: left;
+  background-color: #FAFAFA;
+  margin-right: 15px;
+  width: 50%;
+}
+
+.twocol .right {
+  float: left;
+  background-color: #FAFAFA;
+  margin-right: 15px;
+}
+
+.twocol br {
+  clear: both;
+}
+
 </style>
 
 
@@ -85,17 +103,17 @@ hr { border: 1px #ddd dashed; }
 <hr />
 
 <h2>Refresher from Cornelia’s talk 2021.02.11</h2>
-<img width=100% src="images/components-of-kubernetes.svg"/>
+<img width=100% src="images/components-of-kubernetes.svg">
 <p><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/">The Kubernetes control plane continually and actively manages every object’s actual state to match the desired state you supplied.</a></p>
 
 <h2>Describing a Kubernetes REST object (in YAML)</h2>
 <div class="twocol">
-<div class=="left">
+<div class="left">
 Required Fields:
 <ul>
 <li><span style="font-weight:bold; color:red">apiVersion</span> — version of the Kubernetes API to create this object</li>
 <li><span style="font-weight:bold; color:red">kind</span> — kind of object (more later)</li>
-<li><span style="font-weight:bold; color:red">metadata</span> — unique object identifier (e.g. name string, UID, optional namespace) +
+<li><span style="font-weight:bold; color:red">metadata</span> — unique object identifier <br> (e.g. name string, UID, optional namespace) +
 <ul>
 <li><span style="font-weight:bold; color:red">labels</span> — (optional) grouping handle</li>
 </ul>
@@ -201,7 +219,7 @@ kubectl get pods
 <p>The set of Pods targeted by a Service is usually determined by a LabelSelector</p>
 <div class="twocol">
 <div class="left">
-<img width=100% src="images/module_04_labels.svg"/>
+<img src="images/module_04_labels.svg">
 </div>
 <div class="right">
 <pre><code class="language-js">apiVersion: v1
