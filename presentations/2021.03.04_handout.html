@@ -83,28 +83,15 @@ hr { border: 1px #ddd dashed; }
 
 <body>
 <hr />
-<p>title       : “Hands on k8s (by a dummy)”
-subtitle    :
-author      :
-job         :
-framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
-highlighter : highlight.js  # {highlight.js, prettify, highlight}
-hitheme     : tomorrow      #
-url:
-lib:    ../libraries
-assets: ../assets
-widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
-ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
-mode        : selfcontained # {standalone, draft}
-knit        : slidify::knit2slides</p>
-<p>— .class #id</p>
+
 <h2>Refresher from Cornelia’s talk 2021.02.11</h2>
-<img width=100% src="components-of-kubernetes.svg"/>
+<img width=100% src="images/components-of-kubernetes.svg"/>
 <p><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/">The Kubernetes control plane continually and actively manages every object’s actual state to match the desired state you supplied.</a></p>
-<p>— &amp;twocol</p>
+
 <h2>Describing a Kubernetes REST object (in YAML)</h2>
-<p>*** =left
-Required Fields:</p>
+<div class="twocol">
+<div class=="left">
+Required Fields:
 <ul>
 <li><span style="font-weight:bold; color:red">apiVersion</span> — version of the Kubernetes API to create this object</li>
 <li><span style="font-weight:bold; color:red">kind</span> — kind of object (more later)</li>
@@ -121,7 +108,8 @@ Required Fields:</p>
 </ul>
 </li>
 </ul>
-<p>*** =right</p>
+</div>
+<div class="right">
 <pre><code class="language-js">apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -142,8 +130,11 @@ spec:
         ports:
         - containerPort: 80
 </code></pre>
-<p>*** =fullwidth</p>
-<p>— .class #id</p>
+</div>
+<br>
+</div>
+<br>
+<br>
 <h2>Hands on …</h2>
 <p>Fire it up:</p>
 <pre><code class="language-bash">kubectl apply -f https://k8s.io/examples/application/deployment.yaml
@@ -163,7 +154,8 @@ kubectl get rs
 kubectl describe deployments
 # kubectl edit deployment.v1.apps/nginx-deployment
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>More flexibility</h2>
 <p>Breaking and fixing it:</p>
 <pre><code class="language-bash">kubectl get rs
@@ -182,7 +174,8 @@ kubectl autoscale deployment.v1.apps/nginx-deployment --min=10 --max=15 --cpu-pe
 <pre><code class="language-bash">kubectl delete deployment nginx-deployment
 kubectl get pods
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Workload resources</h2>
 <p>We just played with <code>deployment</code> — one of workload resources to manage one or more Pods:</p>
 <ul>
@@ -201,13 +194,16 @@ kubectl get pods
 <li>Garbage Collection — deletes orphan Pods</li>
 </ul>
 <p><a href="https://kubernetes.io/docs/concepts/workloads/pods/">Controllers for workload resource uses PodTemplate from workload object to make actual Pods</a></p>
-<p>— &amp;twocol</p>
+<br>
+<br>
 <h2>Service</h2>
 <p>Service is an abstraction defining a logical set of Pods and a policy by which to access them</p>
 <p>The set of Pods targeted by a Service is usually determined by a LabelSelector</p>
-<p>*** =left</p>
-<img width=100% src="module_04_labels.svg"/>
-<p>*** =right</p>
+<div class="twocol">
+<div class="left">
+<img width=100% src="images/module_04_labels.svg"/>
+</div>
+<div class="right">
 <pre><code class="language-js">apiVersion: v1
 kind: Service
 metadata:
@@ -224,9 +220,12 @@ spec:
       nodePort: 31443
       name: https
 </code></pre>
-<p>*** =fullwidth
+</div>
+<br>
+</div>
 Such schema organically incorporates load balancing functionality</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Hands on …</h2>
 <p>Try a service out:</p>
 <pre><code class="language-js">kubectl apply -f https://k8s.io/examples/application/deployment.yaml
@@ -242,7 +241,8 @@ kubectl apply -f https://k8s.io/examples/application/mysql/mysql-deployment.yaml
 kubectl describe deployment mysql
 kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Summary</h2>
 <br>
 This quick hands-on demonstrates a rather basic part of k8s' functionality

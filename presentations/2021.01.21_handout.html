@@ -83,21 +83,7 @@ hr { border: 1px #ddd dashed; }
 
 <body>
 <hr />
-<p>title       : “Streaming with Apache Spark”
-subtitle    :
-author      :
-job         :
-framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
-highlighter : highlight.js  # {highlight.js, prettify, highlight}
-hitheme     : tomorrow      #
-url:
-lib:    ../libraries
-assets: ../assets
-widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
-ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
-mode        : selfcontained # {standalone, draft}
-knit        : slidify::knit2slides</p>
-<p>— .class #id</p>
+
 <h2>Scalable solutions for processing lots of data</h2>
 <p>Usual idea: leverage parallelism using cheap commodity hardware</p>
 <p>Software facilitators (in layman’s terms):</p>
@@ -107,8 +93,9 @@ knit        : slidify::knit2slides</p>
 <li>pipeline frameworks like Sophia/Executor, <a href="https://hadoop.apache.org/">Hadoop/Ecosystem</a>, <a href="https://spark.apache.org/">Apache/Spark</a></li>
 </ul>
 <p>Recent timeline of relevant technologies:
-<img class=center src="timeline.png" width=500></p>
-<p>— .class #id</p>
+<img class=center src="images/timeline.png" width=500></p>
+<br>
+<br>
 <h2>Vocabulary</h2>
 <p>Your dataset is big and, therefore, becomes partitioned across many disks on many nodes</p>
 <p><span style="color:red">Map</span> phase: supply every worker node with instruction on how to digest its own partition</p>
@@ -124,13 +111,15 @@ df2 = df.select(df.name, halved(df.score).alias('grade')) \ # clear map stage
 df2.collect()
 # [Row(name=u'Alice', avg(grade)=3.5), Row(name=u'Bob', avg(grade)=3.5)]
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Apache Ecosystem</h2>
-<img class=center src="components.png" width=500>
+<img class=center src="images/components.png" width=500>
 <p>A toolbox seamlessly integrating with Kafka, HDFS, Avro/Parquet, databases, …</p>
 <p>Scala and Java are languages of choice, but python and even R are supported</p>
 <p>Flexible for the chaise of cluster management to run on (supports YARN, Mesos, Kubernetes)</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Example problem</h2>
 <p>Assuming the underlying services are set up (check the backup slides how to do so) let us:</p>
 <ul>
@@ -148,7 +137,8 @@ $$
 $$
 d = 2\cdot atan2(\sqrt{a}, \sqrt{1-a}) \cdot R
 $$</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Preparatory work: source, sink, jupyter</h2>
 <pre><code class="language-bash">kafka-topics.sh --create   --topic my-events --bootstrap-server localhost:9092
 kafka-console-producer.sh  --topic my-events --bootstrap-server localhost:9092
@@ -165,7 +155,8 @@ kafka-console-producer.sh  --topic my-events --bootstrap-server localhost:9092
 export PYSPARK_SUBMIT_ARGS=&quot;--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 --driver-class-path postgresql-43.2.18.jar --jars postgresql-42.2.18.jar --master local[2] pyspark-shell&quot;
 /Users/kkotov/monitoring/spark-3.0.1-bin-without-hadoop/bin/pyspark --master yarn
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Extracting and parsing data from Kafka</h2>
 <pre><code class="language-bash">df = (spark         # Spark context is the entry point
   .read             # operation
@@ -185,7 +176,8 @@ df2 = df.select(from_json(col(&quot;value&quot;), schema).alias(&quot;my_events&
                 col(&quot;my_events.latitude&quot;),
                 col(&quot;my_events.longitude&quot;))
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Transforming and Loading data to DB</h2>
 <pre><code class="language-bash">df3 = \
   df2.withColumn('dPhi',   col('latitude') *3.1416/180. - 46.51287 *3.1416/180.) \
@@ -204,7 +196,8 @@ df3.write \
     .mode(&quot;overwrite&quot;) \
     .save()
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Turning it into a stream</h2>
 <pre><code class="language-bash">dfs = spark \
   .readStream \
@@ -224,7 +217,8 @@ dfs.selectExpr(&quot;CAST(value AS STRING)&quot;, &quot;timestamp&quot;) \
    .outputMode(&quot;update&quot;) \
    .start()
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Summary</h2>
 <p>Using Spark might be an overkill for our simple monitoring tasks, but it brings ease</p>
 <p>Streaming into DB requires a simple sink development or use of 3rd party alternatives:
@@ -242,10 +236,12 @@ dfs.selectExpr(&quot;CAST(value AS STRING)&quot;, &quot;timestamp&quot;) \
 <li><a href="https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/foreach">https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/foreach</a></li>
 <li><a href="https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/production">https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/production</a></li>
 </ul>
-<p>— .class #id</p>
+<br>
+<br>
 <p><br><br><br>
 [\Large Backup]</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Set up Hadoop YARN</h2>
 <pre><code class="language-bash">sudo systemsetup -setremotelogin on
 sudo systemsetup -getremotelogin
@@ -264,7 +260,8 @@ hadoop-2.10.1/sbin/start-yarn.sh
 # now check hdfs health on http://localhost:50070
 </code></pre>
 <p>Bonus point: setting up a multi-node cluster is just adding nodes here: etc/hadoop/slaves</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Setting up Apache Spark (slide 1)</h2>
 <pre><code class="language-bash">wget 'https://downloads.apache.org/spark/spark-3.0.1/spark-3.0.1-bin-without-hadoop.tgz'
 tar -xzf 'spark-3.0.1-bin-without-hadoop.tgz'
@@ -285,7 +282,8 @@ export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/ha
 export SPARK_DIST_CLASSPATH=\${SPARK_DIST_CLASSPATH}:/Users/kkotov/monitoring/hadoop-2.10.1/contrib/capacity-scheduler/*.jar
 EOF
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Setting up Apache Spark (slide 2)</h2>
 <pre><code class="language-bash">cat &lt;&lt; EOF &gt;&gt; ~/.bashrc
 export HADOOP_HOME='/Users/kkotov/monitoring/hadoop-2.10.1'
@@ -305,7 +303,8 @@ export PYSPARK_DRIVER_PYTHON_OPTS=&quot;notebook&quot;
 export PATH=$PATH:$SPARK_HOME/bin
 EOF
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Setting up Jupyter</h2>
 <pre><code class="language-bash">cat &lt;&lt; EOF &gt; ~/.jupyter/kernels/pyspark/kernel.json
 {&quot;display_name&quot;: &quot;pySpark (Spark 3.0.1)&quot;,
@@ -325,7 +324,8 @@ c.NotebookApp.allow_remote_access = True
 c.NotebookApp.ip = '*'
 EOF
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Setting up Postgres</h2>
 <pre><code class="language-bash"># check background info on https://hub.docker.com/_/postgres
 wget https://bitbucket.sophiagenetics.com/users/kkotov/repos/miscellaneous/raw/2021.01.21/postgres.yml
@@ -343,7 +343,8 @@ create database kkotov with owner kkotov encoding 'UTF8';
 
 docker exec -it --user kkotov &lt;postgres_container_id&gt; psql
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Setting up Kafka</h2>
 <pre><code class="language-bash">wget 'https://downloads.apache.org/kafka/2.7.0/kafka_2.13-2.7.0.tgz'
 tar -xzf 'kafka_2.13-2.7.0.tgz'
@@ -352,7 +353,8 @@ export PATH=${PATH}:'/Users/kkotov/monitoring/kafka_2.13-2.7.0/bin/'
 zookeeper-server-start.sh '/Users/kkotov/monitoring/kafka_2.13-2.7.0/config/zookeeper.properties'
 kafka-server-start.sh '/Users/kkotov/monitoring/kafka_2.13-2.7.0/config/server.properties'
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Setting up ksqlDB</h2>
 <p>Start docker-compose from <a href="https://ksqldb.io/quickstart.html">https://ksqldb.io/quickstart.html</a> (e.g. Kafka broker elsewhere option)</p>
 <!--

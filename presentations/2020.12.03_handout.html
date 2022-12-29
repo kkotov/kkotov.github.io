@@ -75,6 +75,23 @@ hr { border: 1px #ddd dashed; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+.twocol .left {
+  float: left;
+  background-color: #FAFAFA;
+  margin-right: 15px;
+}
+
+.twocol .right {
+  float: left;
+  background-color: #FAFAFA;
+  margin-right: 15px;
+}
+
+.twocol br {
+  clear: both;
+}
+
 </style>
 
 
@@ -83,32 +100,19 @@ hr { border: 1px #ddd dashed; }
 
 <body>
 <hr />
-<p>title       : “How I built my Raspberry cluster”
-subtitle    :
-author      :
-job         :
-framework   : io2012        # {io2012, html5slides, shower, dzslides, …}
-highlighter : highlight.js  # {highlight.js, prettify, highlight}
-hitheme     : tomorrow      #
-url:
-lib:    ../libraries
-assets: ../assets
-widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
-ext_widgets : {rCharts: [libraries/nvd3, libraries/polycharts]}
-mode        : selfcontained # {standalone, draft}
-knit        : slidify::knit2slides</p>
-<p>— &amp;twocol</p>
 <h2><a href="https://en.wikipedia.org/wiki/YAML">YAML Aint Markup Language</a></h2>
 <br>
-<p>*** =left</p>
+<div class="twocol">
+<div class="left">
 <ul>
 <li>Whitespace indentation</li>
 <li>(#) — comments</li>
 <li>(-) — list member ([] for many)</li>
 <li>(:) — dictionary entry ({} for many)</li>
-<li>(—) — multiple documents</li>
+<li>(-&nbsp;-&nbsp;-) — multiple documents</li>
 </ul>
-<p>*** =right</p>
+</div>
+<div class="right">
 <pre><code class="language-js">--- # The Smiths
 - {name: John Smith, age: 33}
 - name: Mary Smith
@@ -120,13 +124,17 @@ women:
   - Mary Smith
   - Susan Williams
 </code></pre>
-<p>*** =fullwidth</p>
-<p>— .class #id</p>
+</div>
+<br>
+</div>
+<br>
+<br>
 <h2>Ansible by a dummy</h2>
 <p>Ansible — an extensive list of (python) modules orchestrated within YAML</p>
 <p>Communication happens over the paswordless ssh (given .ssh/authorized_keys are set)</p>
 <p>Targets are stored in so called inventory lists, example:</p>
 <pre>
+<code style="background-color: #FAFAFA;">
 [masters]
 master     ansible_host=192.168.0.157 ansible_user=root ansible_ssh_private_key_file=/home/kkotov/.ssh/id_rsa
 
@@ -139,8 +147,10 @@ ansible_python_interpreter=/usr/bin/python3
 
 [masters:vars]
 ansible_python_interpreter=/usr/bin/python3
+</code>
 </pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Create a user</h2>
 <pre><code class="language-bash">- hosts: workers
   become: yes
@@ -162,7 +172,8 @@ ansible_python_interpreter=/usr/bin/python3
 <p>Run it with:</p>
 <pre><code class="language-bash">ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts ./script.yml
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Set hostnames and kernel parameters</h2>
 <pre><code class="language-bash">- hosts: workers
   become: yes
@@ -185,7 +196,8 @@ ansible_python_interpreter=/usr/bin/python3
     - name: unconditionally reboot the machine with all defaults
       reboot:
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Three steps from next slides collapsed in one</h2>
 <pre><code class="language-bash">- hosts: workers
   become: yes
@@ -206,9 +218,9 @@ ansible_python_interpreter=/usr/bin/python3
    - name: install kubeadm
      apt: {name: kubeadm='1.19.5-00', state: present}
 </code></pre>
-<p>— .class #id</p>
-<h2>Install docker</h2>
 <br>
+<br>
+<h2>Install docker</h2>
 <pre><code class="language-bash">- hosts: workers
   become: yes
   tasks:
@@ -218,7 +230,8 @@ ansible_python_interpreter=/usr/bin/python3
        state: present
        update_cache: true
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Set up a new repo</h2>
 <pre><code class="language-bash">- hosts: all
   become: yes
@@ -239,7 +252,8 @@ ansible_python_interpreter=/usr/bin/python3
        state: present
        filename: 'kubernetes'
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Install kubelet service and kubeadm tool</h2>
 <pre><code class="language-bash">- hosts: all
   become: yes
@@ -256,9 +270,9 @@ ansible_python_interpreter=/usr/bin/python3
        state: present
 </code></pre>
 <p>A newer version 1.20 is available, but it fails to work on Raspbian (works well on my laptop)</p>
-<p>— .class #id</p>
-<h2>Starting up a cluster</h2>
 <br>
+<br>
+<h2>Starting up a cluster</h2>
 <pre><code class="language-bash">- hosts: master
   become: yes
   tasks:
@@ -270,7 +284,8 @@ ansible_python_interpreter=/usr/bin/python3
      args:
        creates: /tmp/cluster_initialized.txt
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Installing configuration locally</h2>
 <pre><code class="language-bash">- hosts: master
   become: yes
@@ -290,9 +305,9 @@ ansible_python_interpreter=/usr/bin/python3
        remote_src: yes
        owner: kkotov
 </code></pre>
-<p>— .class #id</p>
-<h2>Firing up the pod network</h2>
 <br>
+<br>
+<h2>Firing up the pod network</h2>
 <pre><code class="language-bash">- hosts: master
   tasks:
    - name: install Pod network
@@ -302,7 +317,8 @@ ansible_python_interpreter=/usr/bin/python3
      args:
        creates: /tmp/pod_network_setup.txt
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Joining nodes</h2>
 <pre><code class="language-bash">- hosts: master
   become: yes
@@ -323,7 +339,8 @@ ansible_python_interpreter=/usr/bin/python3
       shell: &quot;{ { hostvars['master'].join_command }} &gt;&gt; /tmp/node_joined.txt&quot;
       args: { creates: /tmp/node_joined.txt }
 </code></pre>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Final touch</h2>
 <pre><code class="language-bash">kubectl get pods --namespace=kube-system
 </code></pre>
@@ -342,9 +359,9 @@ kube-scheduler-quickstart            1/1     Running             0          11m
 kubectl -n kube-system delete pod -l k8s-app=kube-dns
 </code></pre>
 <p>(<a href="https://stackoverflow.com/questions/53075796/coredns-pods-have-crashloopbackoff-or-error-state">https://stackoverflow.com/questions/53075796/coredns-pods-have-crashloopbackoff-or-error-state</a>)</p>
-<p>— .class #id</p>
-<h2>Conclusion</h2>
 <br>
+<br>
+<h2>Conclusion</h2>
 <p>You have created you Kubernetes cluster using Ansible scripts</p>
 <p>Ansible documentation (<a href="https://docs.ansible.com/ansible/latest/cli/ansible-doc.html">https://docs.ansible.com/ansible/latest/cli/ansible-doc.html</a>) is generally of a great help</p>
 <p>In addition, plenty of examples are the source of ready solutions (e.g. see example with yum:
@@ -352,7 +369,8 @@ kubectl -n kube-system delete pod -l k8s-app=kube-dns
 <p>Next thing (talk?) would be to use this setup for something cool</p>
 <p>Inspiration:
 <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04">https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04</a></p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Prerequisites</h2>
 <pre><code class="language-js">wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-12-04/2020-12-02-raspios-buster-armhf-lite.zip
 fdisk -l  2020-12-02-raspios-buster-armhf-lite.img
