@@ -9,14 +9,14 @@ body {
 }
 
 .header {
-  background-color: #D3D3D3;
+/*  background-color: #D3D3D3; */
   margin: 0px;
   text-align: center;
   color: #111111;
 }
 
 #self {
-  background-color: #DADADA;
+/*  background-color: #DADADA; */
   color: #000000;
   margin-left: 20px;
   clear: right;
@@ -52,7 +52,7 @@ body {
   font-size: 1.5em;
   text-transform: uppercase;
   font-weight: bold;
-  text-shadow: 1px 1px 1px #222;
+/*  text-shadow: 1px 1px 1px #222; */
   margin-top: 0;
   margin-bottom: 0;
   line-height: 0.75;
@@ -110,7 +110,7 @@ body {
 }
 
 #presentations-title {
-  background-color: #D3D3D3;
+/*  background-color: #D3D3D3; */
   margin: 0px;
   text-align: center;
   color: #111111;
@@ -127,9 +127,27 @@ body {
   margin: 0 auto 15px;
 }
 
+.handout span {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2em;
+  background-color: #000;
+  color: #FFF;
+  opacity: 0.5;
+}
+
 .handout:hover {
   box-shadow: 0 1px 5px 1px #D3D3D3;
 }
+
+#presentations-title + div {
+  margin-bottom: 50px;
+  color: #000;
+}
+/* PRESENTATIONS END */
 
 /* FOOTER */
 .panel-footer {
@@ -144,6 +162,7 @@ body {
   background: #c0c0c0;
 }
 /* FOOTER END */
+
 
 /* desktop */
 @media (min-width: 1200px) {
