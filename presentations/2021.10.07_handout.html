@@ -85,6 +85,23 @@ hr { border: 1px #ddd dashed; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+.twocol .left {
+  float: left;
+  background-color: #FAFAFA;
+  margin-right: 15px;
+}
+
+.twocol .right {
+  float: left;
+  background-color: #FAFAFA;
+  margin-right: 15px;
+}
+
+.twocol br {
+  clear: both;
+}
+
 </style>
 
 </head>
@@ -92,23 +109,23 @@ hr { border: 1px #ddd dashed; }
 <body>
 <hr />
 <h2>Real world example</h2>
-<div class="fivecol" style="clear: both;">
-<div><img class=center width=90% src="images/address.png"></div>
-<div><img class=center width=90% src="images/login.png"></div>
-<div><img class=center width=90% src="images/pass.png"></div>
-<div><img class=center width=90% src="images/jira.png"></div>
-<div style="clear: both;"><img class=center width=90% src="images/mail.png"></div>
+<div class="twocol">
+<div class="left"><img width="380px" src="images/login.png"></div>
+<div class="right"><img width="380px" src="images/pass.png"></div>
+</div>
+<br>
 </div>
 
-<p>Browser is first forwarded from outlook.office365.com (top) to login.microsoft.com (bottom)
-And then it goes back to outlook, but the later has access to my emails (note, jira also works!)</p>
-<p>— .class #id</p>
+<p>Browser is first forwarded from <span style="color: red;">outlook.live.com</span> (left) to <span style="color: red;">login.live.com</span> (right).
+And then it goes back to outlook, but the later starts having access to my emails, OneDrive, and other MS services.</p>
+<br>
+<br>
 <h2>OAuth2 Vocabulary</h2>
 <p>Interacting bodies:</p>
 <ul>
 <li><span style="font-weight:bold; color:red">Resource Owner</span>: <span style="font-weight:bold; color:green">myself</span>, keep my emails with microsoft</li>
 <li><span style="font-weight:bold; color:red">Client</span>: <span style="font-weight:bold; color:green">Outlook</span>, the application that needs full access to my emails on my behalf</li>
-<li><span style="font-weight:bold; color:red">Authorization Server</span>: <span style="font-weight:bold; color:green">login.microsoft</span>, knows me and can verify my identity</li>
+<li><span style="font-weight:bold; color:red">Authorization Server</span>: <span style="font-weight:bold; color:green">login.live</span>, knows me and can verify my identity</li>
 <li><span style="font-weight:bold; color:red">Resource Server</span>: <span style="font-weight:bold; color:green">Data Storage Layer</span>, my mailbox, OneDrive documents, …</li>
 </ul>
 <p>Additional terms:</p>
@@ -119,20 +136,21 @@ And then it goes back to outlook, but the later has access to my emails (note, j
 <li><span style="font-weight:bold; color:red">Authorization code</span>: temporary short-lived code to be exchanged for Access Token by client</li>
 <li><span style="font-weight:bold; color:red">Response Type</span>, <span style="font-weight:bold; color:red">Redirect URI</span>, <span style="font-weight:bold; color:red">Access Token</span>, …</li>
 </ul>
-<p>— .class #id</p>
-<img class=center width=28% src="images/oauth2.jpg"/>
-<p>— .class #id</p>
+<br>
+<br>
+<img width=50% src="images/oauth2.jpg"/>
 <h2>Establishing trust in a nutshell</h2>
-<p>Alice asks Bob to bring her valuables back from Carol, but how Carol knows Bob is not lying?</p>
+<p>Alice asks Bob to bring her valuables back from Carol, but how Carol knows Bob acts on behalf of Alice?</p>
 <p>Carol asks Alice directly. And this is what happens in the example above:</p>
 <ul>
 <li>Mail <span style="color:red">client</span> forwards my browser to <span style="color:red">authorization server</span> where I type my credentials</li>
 <li><span style="color:red">Authorization Server</span> gives <span style="color:red">Authorization Code</span> and forwards me back to the <span style="color:red">client</span></li>
 <li>Mail <span style="color:red">client</span> contacts <span style="color:red">Authorization Server</span> directly and the code proves it acts on my behalf</li>
 </ul>
-<p><span style="color:red">Authorization Server</span> doesn’t keep my emails, Data Storage Layer does but it needs simple pass</p>
+<p><span style="color:red">Authorization Server</span> doesn’t keep my emails; Data Storage Layer does, but it needs to be excused from most of permission control</p>
 <p>Here JSON Web Token kicks in: <span style="color:red">Authorization Server</span> verifies the <span style="color:red">code</span> and hand JWT to the <span style="color:red">client</span></p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>JSON Web Token</h2>
 <p>JWT= “compact and self-contained way for securely transmitting info between parties as JSON”</p>
 <p>JWT consists of base64-encoded <span style="font-weight:bold; color:green">Header</span>, <span style="font-weight:bold; color:brown">Payload</span>, and <span style="font-weight:bold; color:magenta">Signature</span> separated by ‘.’ (<span style="color:green">xxx</span>.<span style="color:brown">yyy</span>.<span style="color:magenta">zzz</span>)</p>
@@ -145,14 +163,17 @@ And then it goes back to outlook, but the later has access to my emails (note, j
 </ul>
 <p><span style="color:magenta">Signature</span> verifies message’s integrity, and, if signed with a private key, sender’s identity; e.g.:
 HMACSHA256( base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret)</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Generating a token in Go</h2>
 <img class=center width=90% src="images/tokenizer.png"/>
 <p>(time for a small demo)</p>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Validating a token in Go</h2>
 <img class=center width=75% src="images/parser2.png"/>
-<p>— .class #id</p>
+<br>
+<br>
 <h2>Summary</h2>
 <p>JWT is secure (i.e. signed), general purpose, and small overhead concept</p>
 <p>Authorization with JWT offers a great flexibility to implement roles, views and specializations
@@ -164,21 +185,6 @@ HMACSHA256( base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret
 <p><a href="https://jwt.io/introduction">https://jwt.io/introduction</a></p>
 <p><a href="https://fusionauth.io/blog/2021/02/18/securing-golang-microservice/">https://fusionauth.io/blog/2021/02/18/securing-golang-microservice/</a></p>
 <p><a href="https://testdriven.io/blog/oauth-python/">https://testdriven.io/blog/oauth-python/</a></p>
-<p>— &amp;fourcol</p>
-<h2>Similar scheme</h2>
-<img class=center width=50% src="images/support.png"/>
-<br>
-<p>*** =farleft
-<img class=center width=95% src="images/paypal2.png"/></p>
-<p>*** =left
-<img class=center width=95% src="images/paypal3.png"/></p>
-<p>*** =right
-<img class=center width=95% src="images/paypal9.png"/></p>
-<p>*** =farright
-<img class=center width=95% src="images/paypal6.png"/></p>
-<p>*** =fullwidth</p>
-<p>Address bar: browser is forwarded from support.meduza.io (top) to paypal.com (bottoms)</p>
-
 
 <script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
 </body>
