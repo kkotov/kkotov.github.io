@@ -10,6 +10,17 @@
 
 
 <style type="text/css">
+
+.fivecol div {
+  float:left;
+  width: 200px;
+}
+
+.fivecol {
+  clear: both;
+}
+
+
 body, td {
   font-family: sans-serif;
   background-color: white;
@@ -76,25 +87,19 @@ hr { border: 1px #ddd dashed; }
 }
 </style>
 
-
-
 </head>
 
 <body>
 <hr />
-<p>— &amp;fourcol</p>
 <h2>Real world example</h2>
-<img class=center width=50% src="address.png"/>
-<br>
-<p>*** =farleft
-<img class=center width=95% src="login.png"/></p>
-<p>*** =left
-<img class=center width=95% src="pass.png"/></p>
-<p>*** =right
-<img class=center width=95% src="jira.png"/></p>
-<p>*** =farright
-<img class=center width=95% src="mail.png"/></p>
-<p>*** =fullwidth</p>
+<div class="fivecol" style="clear: both;">
+<div><img class=center width=90% src="images/address.png"></div>
+<div><img class=center width=90% src="images/login.png"></div>
+<div><img class=center width=90% src="images/pass.png"></div>
+<div><img class=center width=90% src="images/jira.png"></div>
+<div style="clear: both;"><img class=center width=90% src="images/mail.png"></div>
+</div>
+
 <p>Browser is first forwarded from outlook.office365.com (top) to login.microsoft.com (bottom)
 And then it goes back to outlook, but the later has access to my emails (note, jira also works!)</p>
 <p>— .class #id</p>
@@ -115,7 +120,7 @@ And then it goes back to outlook, but the later has access to my emails (note, j
 <li><span style="font-weight:bold; color:red">Response Type</span>, <span style="font-weight:bold; color:red">Redirect URI</span>, <span style="font-weight:bold; color:red">Access Token</span>, …</li>
 </ul>
 <p>— .class #id</p>
-<img class=center width=28% src="oauth2.jpg"/>
+<img class=center width=28% src="images/oauth2.jpg"/>
 <p>— .class #id</p>
 <h2>Establishing trust in a nutshell</h2>
 <p>Alice asks Bob to bring her valuables back from Carol, but how Carol knows Bob is not lying?</p>
@@ -142,11 +147,11 @@ And then it goes back to outlook, but the later has access to my emails (note, j
 HMACSHA256( base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret)</p>
 <p>— .class #id</p>
 <h2>Generating a token in Go</h2>
-<img class=center width=90% src="tokenizer.png"/>
+<img class=center width=90% src="images/tokenizer.png"/>
 <p>(time for a small demo)</p>
 <p>— .class #id</p>
 <h2>Validating a token in Go</h2>
-<img class=center width=75% src="parser2.png"/>
+<img class=center width=75% src="images/parser2.png"/>
 <p>— .class #id</p>
 <h2>Summary</h2>
 <p>JWT is secure (i.e. signed), general purpose, and small overhead concept</p>
@@ -161,16 +166,16 @@ HMACSHA256( base64UrlEncode(header) + “.” + base64UrlEncode(payload), secret
 <p><a href="https://testdriven.io/blog/oauth-python/">https://testdriven.io/blog/oauth-python/</a></p>
 <p>— &amp;fourcol</p>
 <h2>Similar scheme</h2>
-<img class=center width=50% src="support.png"/>
+<img class=center width=50% src="images/support.png"/>
 <br>
 <p>*** =farleft
-<img class=center width=95% src="paypal2.png"/></p>
+<img class=center width=95% src="images/paypal2.png"/></p>
 <p>*** =left
-<img class=center width=95% src="paypal3.png"/></p>
+<img class=center width=95% src="images/paypal3.png"/></p>
 <p>*** =right
-<img class=center width=95% src="paypal9.png"/></p>
+<img class=center width=95% src="images/paypal9.png"/></p>
 <p>*** =farright
-<img class=center width=95% src="paypal6.png"/></p>
+<img class=center width=95% src="images/paypal6.png"/></p>
 <p>*** =fullwidth</p>
 <p>Address bar: browser is forwarded from support.meduza.io (top) to paypal.com (bottoms)</p>
 
