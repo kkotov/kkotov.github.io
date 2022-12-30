@@ -5,7 +5,7 @@
 body {
   font-size: 16px;
   color: #fff;
-  background-color: #F0F0F0;
+  background-color: #FCFCFC;
 }
 
 .header {
@@ -98,6 +98,16 @@ body {
   margin-top: -10px;
 }
 /* NAVBAR END */
+
+
+.jumbotron {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-bottom: 30px;
+  color: inherit;
+  background-color: inherit;
+}
+
 
 /* TILES */
 #presentations-tile, #hobbies-tile {
