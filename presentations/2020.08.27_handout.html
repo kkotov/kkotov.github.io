@@ -249,7 +249,7 @@ tuple&lt;string,string,string&gt; parseName(string name) {
 
 
 <h2>Redirecting and copying streams</h2>
-<p>Setting underlying buffers with ios::rdbuf you can <a href="https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/browse/sg/LogStream.h?at=refs%2Ftags%2Fv1.15">“silence” stream or [re]direct it to a file</a></p>
+<p>Setting underlying buffers with ios::rdbuf you can <a href="https://github.com/kkotov/framework/blob/master/AppFramework/AppOStream.h">“silence” stream or [re]direct it to a file</a></p>
 <p>But lifetime of the buffer becomes your responsibility as stream tries to destruct it when it dies:</p>
 <pre><code class="language-cpp">void qwe(){
   // save output buffer of the stream
@@ -269,7 +269,6 @@ tuple&lt;string,string,string&gt; parseName(string name) {
   cout &lt;&lt; &quot;one row for the stream that also goes to the file &quot; &lt;&lt; endl;
 } // closes file AND its buffer automatically, but cout is kept functional
 </code></pre>
-<!-- https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/commits/34579034afc6e202262ba10142f3872b72bb2a41 -->
 
 
 <h2>i18n</h2>
@@ -321,8 +320,8 @@ but there are global convenience functions for that: <span style="color:black">s
 <h2>Wrapping it up</h2>
 <p>Things I did not cover:</p>
 <ul>
-<li>Use cases in our code base (e.g. <a href="https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/browse/sg/formatted_input/FormattedInput.h#335-352">using comma as separotor</a>)</li>
-<li>Stream manipulators (especially ws and homebrewed <a href="https://bitbucket.sophiagenetics.com/projects/BL/repos/c_utils/browse/sg/formatted_input/FormattedInput.h#77-99">wsnoendl</a>)</li>
+<li>Use cases in my other repos  (e.g. <a href="https://github.com/kkotov/ml/blob/master/csvUtils.h#L40-L48">using comma as separotor</a>)</li>
+<li>Stream manipulators (especially ws)</li>
 <li>Multibyte and wide-character representations for the encoding (e.g. difference between UCS-2 and UTF-8)</li>
 <li>Character encoding conversions (codecvt_utf16, codecvt_utf8_utf16, wstring_convert, …)</li>
 <li>User-defined stream buffers</li>

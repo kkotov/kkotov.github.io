@@ -254,7 +254,7 @@ wget 'https://downloads.apache.org/hadoop/common/hadoop-2.10.1/hadoop-2.10.1.tar
 tar -xzf 'hadoop-2.10.1.tar.gz'
 cd 'hadoop-2.10.1/etc/hadoop/'
 # download core-site.xml, mapred-site.xml, yarn-site.xml, hdfs-site.xml from:
-# https://bitbucket.sophiagenetics.com/users/kkotov/repos/miscellaneous/raw/2021.01.21/
+# https://github.com/kkotov/kkotov.github.io/blob/master/presentations/
 # Change paths for HDFS namenode and datanode directories in hdfs-site.xml and create those
 cd ../../
 hadoop-2.10.1/bin/hdfs namenode -format
@@ -331,7 +331,7 @@ EOF
 <br>
 <h2>Setting up Postgres</h2>
 <pre><code class="language-bash"># check background info on https://hub.docker.com/_/postgres
-wget https://bitbucket.sophiagenetics.com/users/kkotov/repos/miscellaneous/raw/2021.01.21/postgres.yml
+wget https://github.com/kkotov/kkotov.github.io/blob/master/presentations/postgres.yml
 docker-compose -f postgres.yml up
 
 docker ps
