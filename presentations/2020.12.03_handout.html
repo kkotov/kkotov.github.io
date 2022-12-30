@@ -98,6 +98,30 @@ hr { border: 1px #ddd dashed; }
 
 </head>
 
+<h2>Prerequisites</h2>
+Prepare Raspbian image with an ssh key for root user:
+<pre><code class="language-js">wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-12-04/2020-12-02-raspios-buster-armhf-lite.zip
+fdisk -l  2020-12-02-raspios-buster-armhf-lite.img
+echo '532480*512' | bc -l # for this image second partition starts at block 272629760
+sudo losetup -v -f -o 272629760  ./2020-12-02-raspios-buster-armhf-lite.img
+sudo mount -o rw /dev/loop10 /media/kkotov/qwe/
+sudo mkdir /media/kkotov/qwe/root/.ssh
+sudo chmod 700 /media/kkotov/qwe/root/.ssh
+sudo vi /media/kkotov/qwe/root/.ssh/authorized_keys   # &lt;- here goes your id_rsa.pub
+sudo chmod 600 /media/kkotov/qwe/root/.ssh/authorized_keys
+sudo umount /media/kkotov/qwe
+sudo losetup -d /dev/loop10
+echo '8192*512' | bc -l # first partition starts at block 4194304 
+sudo losetup -v -f -o 4194304  ./2020-12-02-raspios-buster-armhf-lite.img
+sudo mount -o rw /dev/loop10 /media/kkotov/qwe/
+sudo touch /media/kkotov/qwe/ssh
+sudo umount /media/kkotov/qwe
+sudo losetup -d /dev/loop10
+</code></pre>
+
+
+<br>
+<br>
 <body>
 <hr />
 <h2><a href="https://en.wikipedia.org/wiki/YAML">YAML Aint Markup Language</a></h2>
@@ -151,7 +175,7 @@ ansible_python_interpreter=/usr/bin/python3
 </pre>
 <br>
 <br>
-<h2>Create a user</h2>
+<h2>Create a new user</h2>
 <pre><code class="language-bash">- hosts: workers
   become: yes
   tasks:
@@ -367,28 +391,6 @@ kubectl -n kube-system delete pod -l k8s-app=kube-dns
 <p>Next thing (talk?) would be to use this setup for something cool</p>
 <p>Inspiration:
 <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04">https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04</a></p>
-<br>
-<br>
-<h2>Prerequisites</h2>
-<pre><code class="language-js">wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-12-04/2020-12-02-raspios-buster-armhf-lite.zip
-fdisk -l  2020-12-02-raspios-buster-armhf-lite.img
-echo '532480*512' | bc -l # for this image second partition starts at block 272629760
-sudo losetup -v -f -o 272629760  ./2020-12-02-raspios-buster-armhf-lite.img
-sudo mount -o rw /dev/loop10 /media/kkotov/qwe/
-sudo mkdir /media/kkotov/qwe/root/.ssh
-sudo chmod 700 /media/kkotov/qwe/root/.ssh
-sudo vi /media/kkotov/qwe/root/.ssh/authorized_keys   # &lt;- here goes your id_rsa.pub
-sudo chmod 600 /media/kkotov/qwe/root/.ssh/authorized_keys
-sudo umount /media/kkotov/qwe
-sudo losetup -d /dev/loop10
-echo '8192*512' | bc -l # first partition starts at block 4194304 
-sudo losetup -v -f -o 4194304  ./2020-12-02-raspios-buster-armhf-lite.img
-sudo mount -o rw /dev/loop10 /media/kkotov/qwe/
-sudo touch /media/kkotov/qwe/ssh
-sudo umount /media/kkotov/qwe
-sudo losetup -d /dev/loop10
-</code></pre>
-
 
 <script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/center-img.min.js" async></script>
 </body>
