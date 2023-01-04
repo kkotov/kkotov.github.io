@@ -1,0 +1,18 @@
+[
+  {"src":  "hobbies/radio.html",
+   "name": "Internet radio",
+   "logo": "<img width=\"180\" height=\"180\"  style=\"padding: 10px; position:absolute; left:8px; top:-10px;\" src=\"images/hobbies/old-radio-with-short-antenna-svgrepo-com.svg\" alt=\"Internet radio\">"
+  },
+  {"src":  "hobbies/weather.html",
+   "name": "Weather station",
+   "logo": "<img width=\"200\" height=\"200\"  style=\"padding: 30px; position:absolute; top:-15px;\" src=\"images/hobbies/thermometer-svgrepo-com.svg\" alt=\"Thermometer\">"
+  },
+  {"src":  "hobbies/forecast.html",
+   "name": "Forecast station",
+   "logo": "<img width=\"200\" height=\"220\"  style=\"padding: 20px; position:absolute; top:-15px;\"  src=\"images/hobbies/weather-windy-rain-svgrepo-com.svg\" alt=\"Weather windy rain\">"
+  },
+  {"src":  "http://cern.ch/kkotov/Hobby.htm",
+   "name": "Old (pre-2015) page",
+   "logo": "<img width=\"200\" height=\"200\"   style=\"padding: 40px; position:absolute; top:-15px;\" src=\"images/hobbies/archive-svgrepo-com.svg\" alt=\"Old\">"
+  }
+]
