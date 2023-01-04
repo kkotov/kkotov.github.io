@@ -37,15 +37,15 @@
 
       <div id="collapsable-nav" class="collapse navbar-collapse">
         <ul id="nav-list" class="nav navbar-nav navbar-right">
-          <li>
-            <a class="glyphicon glyphicon-folder-open"><span> Presentations</span><br class="hidden-xs"></a>
+          <li> <!-- class="visible-xs active"> -->
+            <a href="index.html"><span class="glyphicon glyphicon-home"> Home</span><br class="hidden-xs"></a>
           </li>
-          <li>
-            <a class="glyphicon glyphicon-fire"><span> Hobbies</span><br class="hidden-xs"></a>
+          <li id="navPresentationsButton">
+            <a href="#" onclick="$kk.loadPresentations();"><span class="glyphicon glyphicon-folder-open"> Presentations</span><br class="hidden-xs"></a>
           </li>
-<!--          <li>
-            <a class="glyphicon glyphicon-certificate"><span> Certificates</span><br class="hidden-xs"></a>
-          </li>-->
+          <li id="navHobbiesButton">
+            <a href="#" onclick="$kk.loadHobbies();"><span class="glyphicon glyphicon-fire"> Hobbies</span><br class="hidden-xs"></a>
+          </li>
         </ul>
       </div> <!-- End of #collapsable-nav -->
 
