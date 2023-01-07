@@ -4,7 +4,7 @@
 
 body {
   font-size: 16px;
-  color: #fff;
+  color: #000;
   background-color: #FCFCFC;
 }
 
@@ -172,6 +172,17 @@ body {
   background: #c0c0c0;
 }
 /* FOOTER END */
+
+/* SIMPLE PAGES */
+.story {
+  padding-top: 15px;
+  margin: 5px;
+}
+
+.story img {
+  padding: 10px 10px;
+}
+/* SIMPLE PAGES */
 
 
 /* desktop */
